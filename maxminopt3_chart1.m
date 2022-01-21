@@ -3,19 +3,14 @@ clear;
 
 lambda = 0.06;
 
-
-
 % Random arrays for Gaussian Randomization
 N = 10000;
 
 % Pathloss exponent, distance, pathloss at a distance of 1m
 Lo = 10^(-3);
-dti = 5.17;
-dir = 20;
-drt = 25;
 pl = 2;
 
-seed = 4;
+seed = 2;
 
 L_list = [];
 
@@ -35,16 +30,16 @@ for L = 5:5:30
 
     % Rayleigh channels initialized
 
-    HAA = get_H(11.88,13.47,21.53,lambda,L,Lo,pl,10*seed);
-    HBB = get_H(11.97,14.02,22.50,lambda,L,Lo,pl,10*seed+1);
-    H11 = get_H(11.88,11.97,3.59,lambda,L,Lo,pl,10*seed+2);
-     H21 = get_H(13.47,11.97,19.35,lambda,L,Lo,pl,10*seed+3);
-    H12 = get_H(11.88,14.02,24.12,lambda,L,Lo,pl,10*seed+4);
-    H22 = get_H(13.47,14.02,5.01,lambda,L,Lo,pl,10*seed+5);
-    HA1C = get_H(11.88,28.10,27.81,lambda,L,Lo,pl,10*seed+6);
-    HA2C = get_H(13.47,28.10,19.74,lambda,L,Lo,pl,10*seed+7);
-    HB1C = get_H(11.97,28.10,24.22,lambda,L,Lo,pl,10*seed+8);
-    HB2C = get_H(14.02,28.10,24.51,lambda,L,Lo,pl,10*seed+9);
+    HAA = get_H(34.33,8.43,33.43,lambda,L,Lo,pl,10*seed);
+    HBB = get_H(35.66,10.44,43.46,lambda,L,Lo,pl,10*seed+1);
+    H11 = get_H(34.33,35.66,9.13,lambda,L,Lo,pl,10*seed+2);
+     H21 = get_H(8.43,35.66,36.88,lambda,L,Lo,pl,10*seed+3);
+    H12 = get_H(34.33,10.44,40.32,lambda,L,Lo,pl,10*seed+4);
+    H22 = get_H(8.43,10.44,6.92,lambda,L,Lo,pl,10*seed+5);
+    HA1C = get_H(34.33,26.47,9.36,lambda,L,Lo,pl,10*seed+6);
+    HA2C = get_H(8.43,26.47,27.29,lambda,L,Lo,pl,10*seed+7);
+    HB1C = get_H(35.66,26.47,9.60,lambda,L,Lo,pl,10*seed+8);
+    HB2C = get_H(10.44,26.47,33.90,lambda,L,Lo,pl,10*seed+9);
 
     % IRS reflection matrix (Initialized randomly)
     wi = exp(1i*(2*rand(L,1)-1)*pi);
@@ -65,7 +60,6 @@ for L = 5:5:30
     sigma_ab = 10^(-14.5);
     sigma_loop = 10^(-14);
     sigma_c = 10^(-14.5);
-
 
     min_rate = 0;
 
@@ -208,13 +202,6 @@ nexttile
 plot(L_list,B2_list);
 xlabel('Number of IRS elements')
 ylabel('B2 secrecy Rate(bits/sec/Hz)')
-
-
-
-
-
-
-
 
 
 function H = get_H(dti,dir,dtr,wave_l,L,Lo,pl,rng_val)

@@ -16,14 +16,17 @@ class Circle {
   
 }
 
+let bg
+
 function setup() {
   hover = null
   grabbed = null
   tx_circle = null
   rx_circle = null
   irs_circle = null
-  h = 500
-  w = 700
+  h = 503
+  w = 702
+  bg = loadImage('background.png')
   createCanvas(w, h)
   ellipseMode(RADIUS)
   circles = []
@@ -37,6 +40,7 @@ function setup() {
 }
 
 function draw() {
+  background(bg)
   m = createVector(mouseX, mouseY)
   hover = null
   for (let c of circles) {
@@ -44,7 +48,7 @@ function draw() {
       hover = c
     }
   }
-  background('white')
+  // background('white')
   noStroke()
   if (hover) cursor('grab')
   else cursor(ARROW)
@@ -64,7 +68,7 @@ function mousePressed() {
 }
 
 function mouseReleased() {
-  console.log('HAA = get_H('+get_value_str('A1','A2')+',lambda,L,Lo,pl);\r\nHBB = get_H('+get_value_str('B1','B2')+',lambda,L,Lo,pl);\r\nH11 = get_H('+get_value_str('A1','B1')+',lambda,L,Lo,pl);\r\n H21 = get_H('+get_value_str('A2','B1')+',lambda,L,Lo,pl);\r\nH12 = get_H('+get_value_str('A1','B2')+',lambda,L,Lo,pl);\r\nH22 = get_H('+get_value_str('A2','B2')+',lambda,L,Lo,pl);\r\nHA1C = get_H('+get_value_str('A1','C')+',lambda,L,Lo,pl);\r\nHA2C = get_H('+get_value_str('A2','C')+',lambda,L,Lo,pl);\r\nHB1C = get_H('+get_value_str('B1','C')+',lambda,L,Lo,pl);\r\nHB2C = get_H('+get_value_str('B2','C')+',lambda,L,Lo,pl);')
+  console.log('HAA = get_H('+get_value_str('A1','A2')+',lambda,L,Lo,pl,10*seed);\r\nHBB = get_H('+get_value_str('B1','B2')+',lambda,L,Lo,pl,10*seed+1);\r\nH11 = get_H('+get_value_str('A1','B1')+',lambda,L,Lo,pl,10*seed+2);\r\n H21 = get_H('+get_value_str('A2','B1')+',lambda,L,Lo,pl,10*seed+3);\r\nH12 = get_H('+get_value_str('A1','B2')+',lambda,L,Lo,pl,10*seed+4);\r\nH22 = get_H('+get_value_str('A2','B2')+',lambda,L,Lo,pl,10*seed+5);\r\nHA1C = get_H('+get_value_str('A1','C')+',lambda,L,Lo,pl,10*seed+6);\r\nHA2C = get_H('+get_value_str('A2','C')+',lambda,L,Lo,pl,10*seed+7);\r\nHB1C = get_H('+get_value_str('B1','C')+',lambda,L,Lo,pl,10*seed+8);\r\nHB2C = get_H('+get_value_str('B2','C')+',lambda,L,Lo,pl,10*seed+9);')
 
 
   // console.log(2*(hover.p.x-350)/25)
