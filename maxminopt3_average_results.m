@@ -10,7 +10,7 @@ N = 10000;
 Lo = 10^(-3);
 pl = 2;
 
-L_list = 5:5:15;
+L_list = 5:5:30;
 
 A1_master_list = [];
 B1_master_list = [];
@@ -18,7 +18,11 @@ A2_master_list = [];
 B2_master_list = [];
 min_master_list = [];
 
-for seed = 1:2
+num_seeds = 100;
+f = waitbar(0,'Please wait...');
+
+for seed = 1:num_seeds
+    waitbar(seed/num_seeds,f,'Simulating...');
 
     A1_list = [];
     B1_list = [];
@@ -27,7 +31,7 @@ for seed = 1:2
     min_list = [];
 
     % Number of elements of the IRS
-    for L = 5:5:15
+    for L = 5:5:30
 
         % Rayleigh channels initialized
 
@@ -185,6 +189,8 @@ for seed = 1:2
     min_master_list = cat(1,A1_master_list,A1_list);
 
 end
+
+close(f)
 
 figure(1)
 plot(L_list,mean(min_master_list));
