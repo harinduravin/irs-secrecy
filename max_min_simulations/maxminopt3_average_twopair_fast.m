@@ -10,7 +10,9 @@ N = 10000;
 Lo = 10^(-3);
 pl = 2;
 
-L_list = 5:5:30;
+maximum_L = 20;
+
+L_list = 5:5:maximum_L;
 
 A1_master_list = [];
 B1_master_list = [];
@@ -18,10 +20,13 @@ A2_master_list = [];
 B2_master_list = [];
 min_master_list = [];
 
-num_seeds = 3;
+num_seeds = 8;
 f = waitbar(0,'Please wait...');
 
-for seed = 1:num_seeds
+for seed = 4:num_seeds
+    if seed==2
+        continue
+    end
     waitbar(seed/num_seeds,f,'Simulating...');
 
     A1_list = [];
@@ -31,7 +36,7 @@ for seed = 1:num_seeds
     min_list = [];
 
     % Number of elements of the IRS
-    for L = 5:5:30
+    for L = 5:5:maximum_L
 
         % Rayleigh channels initialized
 
@@ -107,9 +112,9 @@ for seed = 1:num_seeds
             t_old = 0;
             t_new = 1;
 
-            for j = 0:100
+            for j = 0:30
 
-                cvx_begin quiet
+                cvx_begin
                 cvx_solver Mosek
                 variable w_opt(1,L+1) complex
                 variable t
@@ -117,47 +122,53 @@ for seed = 1:num_seeds
                 subject to
 
                 %A1
-                (get_secrecy_rate(w'*w, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C) + ...
+                (get_P_Q(w'*w, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C) + ...
                     2*PB1*real(w_opt*H11*H11'*w')/(sigma_ab+sigma_loop+get_A(w'*w, PA2, HAA, PB2, H12)) ...
                     -(get_channel_term(PB1, w'*w, H11)/((sigma_ab+sigma_loop+get_A(w'*w, PA2, HAA, PB2, H12))* ...
                     ((sigma_ab+sigma_loop+get_A(w'*w, PA2, HAA, PB2, H12))+get_channel_term(PB1, w'*w, H11))))*(sigma_ab+sigma_loop+PB1*pow_abs(w_opt * H11, 2)+PA2*pow_abs(w_opt * HAA, 2)+PB2*pow_abs(w_opt * H12, 2)) ...
                     -(get_channel_term(PB1, w'*w, H11)/(sigma_ab+sigma_loop+get_A(w'*w, PA2, HAA, PB2, H12)))...
-                    - (1/(1+get_zbar(w'*w, HB1C, HA1C, HB2C, HA2C, PB1, PA1, PB2, PA2)))*(PB1*quad_over_lin(w_opt * HB1C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w'))+PB2*real((2*w_opt*HB2C-w*HB2C)*(HB2C'*w'))+PA2*real((2*w_opt*HA2C-w*HA2C)*(HA2C'*w')))-get_zbar(w'*w, HB1C, HA1C, HB2C, HA2C, PB1, PA1, PB2, PA2))) >= t;
+                    - (1/(1+get_zbar(w'*w, HB1C, HA1C, HB2C, HA2C, PB1, PA1, PB2, PA2)))*(PB1*quad_over_lin(w_opt * HB1C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w')))-get_zbar(w'*w, HB1C, HA1C, HB2C, HA2C, PB1, PA1, PB2, PA2))) >= t;
+                    % - (1/(1+get_zbar(w'*w, HB1C, HA1C, HB2C, HA2C, PB1, PA1, PB2, PA2)))*(PB1*quad_over_lin(w_opt * HB1C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w'))+PB2*real((2*w_opt*HB2C-w*HB2C)*(HB2C'*w'))+PA2*real((2*w_opt*HA2C-w*HA2C)*(HA2C'*w')))-get_zbar(w'*w, HB1C, HA1C, HB2C, HA2C, PB1, PA1, PB2, PA2))) >= t;
 
                 %A2
-                (get_secrecy_rate(w'*w, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C) + ...
+                (get_P_Q(w'*w, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C) + ...
                     2*PB2*real(w_opt*H22*H22'*w')/(sigma_ab+sigma_loop+get_A(w'*w, PA1, HAA, PB1, H21)) ...
                     -(get_channel_term(PB2, w'*w, H22)/((sigma_ab+sigma_loop+get_A(w'*w, PA1, HAA, PB1, H21))* ...
                     ((sigma_ab+sigma_loop+get_A(w'*w, PA1, HAA, PB1, H21))+get_channel_term(PB2, w'*w, H22))))*(sigma_ab+sigma_loop+PB2*pow_abs(w_opt * H22, 2)+PA1*pow_abs(w_opt * HAA, 2)+PB1*pow_abs(w_opt * H21, 2)) ...
                     -(get_channel_term(PB2, w'*w, H22)/(sigma_ab+sigma_loop+get_A(w'*w, PA1, HAA, PB1, H21)))...
-                    - (1/(1+get_zbar(w'*w, HB2C, HA1C, HB1C, HA2C, PB2, PA1, PB1, PA2)))*(PB2*quad_over_lin(w_opt * HB2C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w'))+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w'))+PA2*real((2*w_opt*HA2C-w*HA2C)*(HA2C'*w')))-get_zbar(w'*w, HB2C, HA1C, HB1C, HA2C, PB2, PA1, PB1, PA2))) >= t;
+                    - (1/(1+get_zbar(w'*w, HB2C, HA1C, HB1C, HA2C, PB2, PA1, PB1, PA2)))*(PB2*quad_over_lin(w_opt * HB2C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w')))-get_zbar(w'*w, HB2C, HA1C, HB1C, HA2C, PB2, PA1, PB1, PA2))) >= t;
+                    % - (1/(1+get_zbar(w'*w, HB2C, HA1C, HB1C, HA2C, PB2, PA1, PB1, PA2)))*(PB2*quad_over_lin(w_opt * HB2C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w'))+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w'))+PA2*real((2*w_opt*HA2C-w*HA2C)*(HA2C'*w')))-get_zbar(w'*w, HB2C, HA1C, HB1C, HA2C, PB2, PA1, PB1, PA2))) >= t;
 
                 %B1
-                (get_secrecy_rate(w'*w, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C) + ...
+                (get_P_Q(w'*w, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C) + ...
                     2*PA1*real(w_opt*H11*H11'*w')/(sigma_ab+sigma_loop+get_A(w'*w, PA2, H21, PB2, HBB)) ...
                     -(get_channel_term(PA1, w'*w, H11)/((sigma_ab+sigma_loop+get_A(w'*w, PA2, H21, PB2, HBB))* ...
                     ((sigma_ab+sigma_loop+get_A(w'*w, PA2, H21, PB2, HBB))+get_channel_term(PA1, w'*w, H11))))*(sigma_ab+sigma_loop+PA1*pow_abs(w_opt * H11, 2)+PA2*pow_abs(w_opt * H21, 2)+PB2*pow_abs(w_opt * HBB, 2)) ...
                     -(get_channel_term(PA1, w'*w, H11)/(sigma_ab+sigma_loop+get_A(w'*w, PA2, H21, PB2, HBB)))...
-                    - (1/(1+get_zbar(w'*w, HA1C, HB1C, HB2C, HA2C, PA1, PB1, PB2, PA2)))*(PA1*quad_over_lin(w_opt * HA1C,sigma_c+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w'))+PB2*real((2*w_opt*HB2C-w*HB2C)*(HB2C'*w'))+PA2*real((2*w_opt*HA2C-w*HA2C)*(HA2C'*w')))-get_zbar(w'*w, HA1C, HB1C, HB2C, HA2C, PA1, PB1, PB2, PA2))) >= t;
+                    - (1/(1+get_zbar(w'*w, HA1C, HB1C, HB2C, HA2C, PA1, PB1, PB2, PA2)))*(PA1*quad_over_lin(w_opt * HA1C,sigma_c+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w')))-get_zbar(w'*w, HA1C, HB1C, HB2C, HA2C, PA1, PB1, PB2, PA2))) >= t;
+                    % - (1/(1+get_zbar(w'*w, HA1C, HB1C, HB2C, HA2C, PA1, PB1, PB2, PA2)))*(PA1*quad_over_lin(w_opt * HA1C,sigma_c+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w'))+PB2*real((2*w_opt*HB2C-w*HB2C)*(HB2C'*w'))+PA2*real((2*w_opt*HA2C-w*HA2C)*(HA2C'*w')))-get_zbar(w'*w, HA1C, HB1C, HB2C, HA2C, PA1, PB1, PB2, PA2))) >= t;
 
                 %B2
-                (get_secrecy_rate(w'*w, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C) + ...
-                2*PA2*real(w_opt*H22*H22'*w')/(sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12)) ...
-                -(get_channel_term(PA2, w'*w, H22)/((sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12))* ...
-                ((sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12))+get_channel_term(PA2, w'*w, H22))))*(sigma_ab+sigma_loop+PA2*pow_abs(w_opt * H22, 2)+PB1*pow_abs(w_opt * HBB, 2)+PA1*pow_abs(w_opt * H12, 2)) ...
-                -(get_channel_term(PA2, w'*w, H22)/(sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12)))...
-                - (1/(1+get_zbar(w'*w, HA2C, HA1C, HB2C, HB1C, PA2, PA1, PB2, PB1)))*(PA2*quad_over_lin(w_opt * HA2C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w'))+PB2*real((2*w_opt*HB2C-w*HB2C)*(HB2C'*w'))+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w')))-get_zbar(w'*w, HA2C, HA1C, HB2C, HB1C, PA2, PA1, PB2, PB1))) >= t;
+                (get_P_Q(w'*w, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C) + ...
+                    2*PA2*real(w_opt*H22*H22'*w')/(sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12)) ...
+                    -(get_channel_term(PA2, w'*w, H22)/((sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12))* ...
+                    ((sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12))+get_channel_term(PA2, w'*w, H22))))*(sigma_ab+sigma_loop+PA2*pow_abs(w_opt * H22, 2)+PB1*pow_abs(w_opt * HBB, 2)+PA1*pow_abs(w_opt * H12, 2)) ...
+                    -(get_channel_term(PA2, w'*w, H22)/(sigma_ab+sigma_loop+get_A(w'*w, PB1, HBB, PA1, H12)))...
+                    - (1/(1+get_zbar(w'*w, HA2C, HA1C, HB2C, HB1C, PA2, PA1, PB2, PB1)))*(PA2*quad_over_lin(w_opt * HA2C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w')))-get_zbar(w'*w, HA2C, HA1C, HB2C, HB1C, PA2, PA1, PB2, PB1))) >= t;
+                    % - (1/(1+get_zbar(w'*w, HA2C, HA1C, HB2C, HB1C, PA2, PA1, PB2, PB1)))*(PA2*quad_over_lin(w_opt * HA2C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w'))+PB2*real((2*w_opt*HB2C-w*HB2C)*(HB2C'*w'))+PB1*real((2*w_opt*HB1C-w*HB1C)*(HB1C'*w')))-get_zbar(w'*w, HA2C, HA1C, HB2C, HB1C, PA2, PA1, PB2, PB1))) >= t;
 
-                for k = 1 : L
+%% Above 4 parts are changed for testing purposes. uncomment last three lines of each and comments last two lines to retrieve the original lines.
+
+                for k = 1 : L+1
                     abs(w_opt(1,k)) <= 1;
                 end
-                w_opt(1,L+1)== 1;
-                norm((w-w_opt),1)<=L;
+                % w_opt(1,L+1)== 1;
+                norm((w_opt-w),1)<=0.1;
 
                 cvx_end
 
-                t_new = t;
-                if abs(t_new-t_old)<0.0001
+                t_new = t
+                if abs(t_new-t_old)/t_old<0.01
                     j
                     t_old = 0;
                     t_new = 1;
@@ -165,10 +176,15 @@ for seed = 1:num_seeds
                 end
                 t_old = t_new;
 
-
-
     %%%%%%%%%%%%
                 w = w_opt; % Might need to take the other way around
+                RA1 = get_secrecy_rate(w'*w, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C);
+                RA2 = get_secrecy_rate(w'*w, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C);
+                RB1 = get_secrecy_rate(w'*w, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C);
+                RB2 = get_secrecy_rate(w'*w, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C);
+    
+    
+                min_rate = min([RA1,RA2,RB1,RB2])
 
                 %% testing 
                 % a = get_P(w'*w, PB1, H11)
@@ -178,7 +194,6 @@ for seed = 1:num_seeds
                 % ((sigma_ab+sigma_loop+0.0000001)+get_channel_term(PB1, w'*w, H11))))*(sigma_ab+sigma_loop+PB1*pow_abs(w_opt * H11, 2))
                 % d = -(get_channel_term(PB1, w'*w, H11)/(sigma_ab+sigma_loop+0.0000001))
                 % e = - get_coef(w'*w, HB1C, HA1C, PB1, PA1)*PB1*quad_over_lin(w_opt * HB1C,sigma_c+PA1*real((2*w_opt*HA1C-w*HA1C)*(HA1C'*w')))
-
 
                 %% end testing
 
@@ -192,7 +207,7 @@ for seed = 1:num_seeds
             RB2 = get_secrecy_rate(w'*w, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C);
 
 
-            min_rate = min([RA1,RA2,RB1,RB2])
+            min_rate = min([RA1,RA2,RB1,RB2]);
 
         end
 
@@ -310,6 +325,18 @@ function c_rate = get_secrecy_rate(W, leg, inf1, inf2, eves, pleg, pinf1, pinf2,
     sigma_loop = 10^(-14);
     eves_inf = log2(1 + (get_channel_term(peves, W, eves))/(sigma_c + get_channel_term(peves1, W, eves1)+get_channel_term(peves2, W, eves2)+get_channel_term(peves3, W, eves3)));
     leg_inf = log2(1 + (get_channel_term(pleg, W, leg))/(get_channel_term(pinf1, W, inf1) + get_channel_term(pinf2, W, inf2) + sigma_ab + sigma_loop));
+    c_rate = leg_inf - eves_inf;
+%     c_rate = max(0,leg_inf - eves_inf);
+
+end
+
+function c_rate = get_P_Q(W, leg, inf1, inf2, eves, pleg, pinf1, pinf2, peves, peves1, peves2, peves3, eves1, eves2, eves3)
+
+    sigma_c = 10^(-14.5);
+    sigma_ab = 10^(-14.5);
+    sigma_loop = 10^(-14);
+    eves_inf = log(1 + (get_channel_term(peves, W, eves))/(sigma_c + get_channel_term(peves1, W, eves1)+get_channel_term(peves2, W, eves2)+get_channel_term(peves3, W, eves3)));
+    leg_inf = log(1 + (get_channel_term(pleg, W, leg))/(get_channel_term(pinf1, W, inf1) + get_channel_term(pinf2, W, inf2) + sigma_ab + sigma_loop));
     c_rate = leg_inf - eves_inf;
 %     c_rate = max(0,leg_inf - eves_inf);
 

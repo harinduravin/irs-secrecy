@@ -10,7 +10,11 @@ N = 10000;
 Lo = 10^(-3);
 pl = 2;
 
-L_list = 5:5:30;
+L = 20;
+inner_iter = 8;
+outer_iter = 2;
+
+power_list = 13:0.8:17;
 
 A1_master_list = [];
 B1_master_list = [];
@@ -18,7 +22,7 @@ A2_master_list = [];
 B2_master_list = [];
 min_master_list = [];
 
-num_seeds = 100;
+num_seeds = 3;
 f = waitbar(0,'Please wait...');
 
 for seed = 1:num_seeds
@@ -30,8 +34,8 @@ for seed = 1:num_seeds
     B2_list = [];
     min_list = [];
 
-    % Number of elements of the IRS
-    for L = 5:5:30
+    for max_power = 13:0.8:17
+
 
         % Rayleigh channels initialized
 
@@ -51,15 +55,15 @@ for seed = 1:num_seeds
         w = [wi ; 1].';
         W = w'*w;
 
-        PA1 = 0.04;
-        PB1 = 0.04;
-        PA2 = 0.04;
-        PB2 = 0.04;
+        PA1 = dbm2watt(max_power);
+        PB1 = dbm2watt(max_power);
+        PA2 = dbm2watt(max_power);
+        PB2 = dbm2watt(max_power);
 
-        RA1 = get_secrecy_rate(W, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C)
-        RA2 = get_secrecy_rate(W, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C)
-        RB1 = get_secrecy_rate(W, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C)
-        RB2 = get_secrecy_rate(W, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C)
+        RA1 = get_secrecy_rate(W, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C);
+        RA2 = get_secrecy_rate(W, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C);
+        RB1 = get_secrecy_rate(W, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C);
+        RB2 = get_secrecy_rate(W, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C);
 
         % Noise and residual loop interference
         sigma_ab = 10^(-14.5);
@@ -68,21 +72,21 @@ for seed = 1:num_seeds
 
         min_rate = 0;
 
-        for j = 0:10
+        for j = 1:outer_iter
 
             max_min = 0;
             max_min_ind = 0;
             for i = 0:15
                 power_string = num2str(dec2bin(i,4));
-                PA1 = get_power(power_string(1));
-                PA2 = get_power(power_string(2));
-                PB1 = get_power(power_string(3));
-                PB2 = get_power(power_string(4));
+                PA1 = get_power(power_string(1),dbm2watt(max_power));
+                PA2 = get_power(power_string(2),dbm2watt(max_power));
+                PB1 = get_power(power_string(3),dbm2watt(max_power));
+                PB2 = get_power(power_string(4),dbm2watt(max_power));
 
-                RA1 = get_P(W, H11, HAA, H12, PB1, PA2, PB2, PA1, PB2, PA2, HA1C, HB2C, HA2C) - get_Q(W, HAA, H12,HB1C, PA2, PB2 ,PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C);
-                RA2 = get_P(W, H22, HAA, H21, PB2, PA1, PB1, PA1, PB1, PA2, HA1C, HB1C, HA2C) - get_Q(W, HAA, H21,HB2C, PA1, PB1 ,PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C);
-                RB1 = get_P(W, H11, HBB, H21, PA1, PB2, PA2, PB1, PB2, PA2, HB1C, HB2C, HA2C) - get_Q(W, HBB, H21,HA1C, PB2, PA2 ,PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C);
-                RB2 = get_P(W, H22, HBB, H12, PA2, PB1, PA1, PA1, PB1, PB2, HA1C, HB1C, HB2C) - get_Q(W, HBB, H12,HA2C, PB1, PA1 ,PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C);
+                RA1 = get_P(W, H11, HAA, H12, PB1, PA2, PB2, PA1, PB2, PA2, HA1C, HB2C, HA2C) - get_Q(W, HAA, H12,HB1C, PA2, PB2 ,PB1, PA1, PB2, PA2,HA1C,  HB2C, HA2C);
+                RA2 = get_P(W, H22, HAA, H21, PB2, PA1, PB1, PA1, PB1, PA2, HA1C, HB1C, HA2C) - get_Q(W, HAA, H21,HB2C, PA1, PB1 ,PB2, PA1, PB1, PA2,HA1C,  HB1C, HA2C);
+                RB1 = get_P(W, H11, HBB, H21, PA1, PB2, PA2, PB1, PB2, PA2, HB1C, HB2C, HA2C) - get_Q(W, HBB, H21,HA1C, PB2, PA2 ,PA1, PB1, PB2, PA2,HB1C,  HB2C, HA2C);
+                RB2 = get_P(W, H22, HBB, H12, PA2, PB1, PA1, PA1, PB1, PB2, HA1C, HB1C, HB2C) - get_Q(W, HBB, H12,HA2C, PB1, PA1 ,PA2, PA1, PB1, PB2,HA1C,  HB1C, HB2C);
 
                 min_value = min([RA1,RA2,RB1,RB2]);
         %         fprintf(string(min_value))
@@ -97,12 +101,12 @@ for seed = 1:num_seeds
         %     fprintf("done")
 
             power_string = num2str(dec2bin(max_min_ind,4));
-            PA1 = get_power(power_string(1));
-            PA2 = get_power(power_string(2));
-            PB1 = get_power(power_string(3));
-            PB2 = get_power(power_string(4));
+            PA1 = get_power(power_string(1),dbm2watt(max_power));
+            PA2 = get_power(power_string(2),dbm2watt(max_power));
+            PB1 = get_power(power_string(3),dbm2watt(max_power));
+            PB2 = get_power(power_string(4),dbm2watt(max_power));
 
-            for j = 0:1
+            for j = 1:inner_iter
 
                 cvx_begin quiet
                 cvx_solver mosek
@@ -112,75 +116,48 @@ for seed = 1:num_seeds
                 minimize t
 
                 subject to
-                    -log(PB1*real(trace((H11*H11')*X))+PA2*real(trace((HAA*HAA')*X))+PB2*real(trace((H12*H12')*X))+sigma_ab+sigma_loop) -log(PA1*real(trace((HA1C*HA1C')*X))    +PB2*real(trace((HB2C*HB2C')*X))+PA2*real(trace((HA2C*HA2C')*X))+sigma_c) - real(trace(get_grad_S(W, PA2, HAA, PB2, H12, PB1, HB1C, PA1, PB2, PA2, HA1C,    HB2C, HA2C)*(X-W))) <= t;
-                    -log(PB2*real(trace((H22*H22')*X))+PA1*real(trace((HAA*HAA')*X))+PB1*real(trace((H21*H21')*X))+sigma_ab+sigma_loop) -log(PA1*real(trace((HA1C*HA1C')*X))    +PB1*real(trace((HB1C*HB1C')*X))+PA2*real(trace((HA2C*HA2C')*X))+sigma_c) - real(trace(get_grad_S(W,  PA1, HAA, PB1, H21, PB2, HB2C, PA1, PB1, PA2, HA1C,   HB1C, HA2C)*(X-W))) <= t;
-                    -log(PA1*real(trace((H11*H11')*X))+PB2*real(trace((HBB*HBB')*X))+PA2*real(trace((H21*H21')*X))+sigma_ab+sigma_loop) -log(PB1*real(trace((HB1C*HB1C')*X))    +PB2*real(trace((HB2C*HB2C')*X))+PA2*real(trace((HA2C*HA2C')*X))+sigma_c) - real(trace(get_grad_S(W,  PB2, HBB, PA2, H21, PA1, HA1C, PB1, PB2, PA2, HB1C,   HB2C, HA2C)*(X-W))) <= t;
-                    -log(PA2*real(trace((H22*H22')*X))+PB1*real(trace((HBB*HBB')*X))+PA1*real(trace((H12*H12')*X))+sigma_ab+sigma_loop) -log(PB1*real(trace((HB1C*HB1C')*X))    +PB2*real(trace((HB2C*HB2C')*X))+PA1*real(trace((HA1C*HA1C')*X))+sigma_c) - real(trace(get_grad_S(W,  PB1, HBB, PA1, H12, PA2, HA2C, PA1, PB1, PB2, HA1C,   HB1C, HB2C)*(X-W))) <= t;
+                    -log(PB1*real(trace((H11*H11')*X))+PA2*real(trace((HAA*HAA')*X))+PB2*real(trace((H12*H12')*X))+sigma_ab+sigma_loop) -log(PA1*real(trace(    (HA1C*HA1C')*X))    +PB2*real(trace((HB2C*HB2C')*X))+PA2*real(trace((HA2C*HA2C')*X))+sigma_c) - real(trace(get_grad_S(W, PA2,HAA, PB2,  H12, PB1, HB1C, PA1, PB2, PA2, HA1C,    HB2C, HA2C)*(X-W))) <= t;
+
+                    -log(PB2*real(trace((H22*H22')*X))+PA1*real(trace((HAA*HAA')*X))+PB1*real(trace((H21*H21')*X))+sigma_ab+sigma_loop) -log(PA1*real(trace(    (HA1C*HA1C')*X))    +PB1*real(trace((HB1C*HB1C')*X))+PA2*real(trace((HA2C*HA2C')*X))+sigma_c) - real(trace(get_grad_S(W,  PA1,HAA, PB1,     H21, PB2, HB2C, PA1, PB1, PA2, HA1C,   HB1C, HA2C)*(X-W))) <= t;
+
+                    -log(PA1*real(trace((H11*H11')*X))+PB2*real(trace((HBB*HBB')*X))+PA2*real(trace((H21*H21')*X))+sigma_ab+sigma_loop) -log(PB1*real(trace(    (HB1C*HB1C')*X))    +PB2*real(trace((HB2C*HB2C')*X))+PA2*real(trace((HA2C*HA2C')*X))+sigma_c) - real(trace(get_grad_S(W,  PB2,HBB, PA2,     H21, PA1, HA1C, PB1, PB2, PA2, HB1C,   HB2C, HA2C)*(X-W))) <= t;
+
+                    -log(PA2*real(trace((H22*H22')*X))+PB1*real(trace((HBB*HBB')*X))+PA1*real(trace((H12*H12')*X))+sigma_ab+sigma_loop) -log(PB1*real(trace(    (HB1C*HB1C')*X))    +PB2*real(trace((HB2C*HB2C')*X))+PA1*real(trace((HA1C*HA1C')*X))+sigma_c) - real(trace(get_grad_S(W,  PB1,HBB, PA1,     H12, PA2, HA2C, PA1, PB1, PB2, HA1C,   HB1C, HB2C)*(X-W))) <= t;
+
                     diag(X) == 1;
                     norm((X-W),1)<=2;
+
                 cvx_end
 
                 W = X;
 
-            end
-    %         fprintf(string(t))
-    %         fprintf('\r')
+            end % End of inner iteration
 
+        end % End of outer iteration
 
-            [U,D,U_] = svd(X);
-            w0 = U(:,1)/U(L+1,1);
-            w0 = w0./abs(w0);
-            Wx = w0*w0';
-
-            RA1 = get_secrecy_rate(Wx, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C);
-            RA2 = get_secrecy_rate(Wx, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C);
-            RB1 = get_secrecy_rate(Wx, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C);
-            RB2 = get_secrecy_rate(Wx, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C);
-
-
-            min_rate = min([RA1,RA2,RB1,RB2])
-
-        end
-
-        [U,D,U_] = svd(X);
-
-        % % To initiate Gaussian Random vector for Gaussian Randomization method
-        % 
-        % r = sqrt(1/2)*(randn(L+1,N)+1i*randn(L+1,N));
-        % w_bar = U*sqrt(D)*r;
-        % obj = w_bar'*(H11*H11')*w_bar;
-        % 
-        % obj_diag = diag(obj);
-        % [value,argu] = max(real(obj_diag));
-        % 
-        % opt_w_bar = w_bar(:,argu);
-        % opt_w_unnormal = opt_w_bar(1:end-1)/opt_w_bar(end);
-        % 
-        % % The optimal reflection matrix
-        % opt_w = exp(1i*angle(opt_w_unnormal));
-
-        % Taking the 1st column instead of using Gaussian Randomization
-
+        [U,D,U_] = svd(W);
         w0 = U(:,1)/U(L+1,1);
         w0 = w0./abs(w0);
         Wx = w0*w0';
-
-        % s = ((log(1 + (opt_P2/(sig1^2+sigl1^2))*real(trace(H*Wx)))+log(1 + (opt_P1/(sig2^2+sigl2^2))*real(trace(G*Wx)))))-log(1+(opt_P1/sige^2)*real(trace(E1*Wx))+(opt_P2/   sige^2)*real(trace(E2*Wx)));
-        % s = s/(log(2));
+    
         RA1 = get_secrecy_rate(Wx, H11, HAA, H12, HB1C, PB1, PA2, PB2, PB1, PA1, PB2, PA2, HA1C, HB2C, HA2C);
         RA2 = get_secrecy_rate(Wx, H22, HAA, H21, HB2C, PB2, PA1, PB1, PB2, PA1, PB1, PA2, HA1C, HB1C, HA2C);
         RB1 = get_secrecy_rate(Wx, H11, HBB, H21, HA1C, PA1, PB2, PA2, PA1, PB1, PB2, PA2, HB1C, HB2C, HA2C);
         RB2 = get_secrecy_rate(Wx, H22, HBB, H12, HA2C, PA2, PB1, PA1, PA2, PA1, PB1, PB2, HA1C, HB1C, HB2C);
+
+        % Minimum rate at the end of each CVX iteration    
+        min_rate = min([RA1,RA2,RB1,RB2])
+
+        % Storing them in list
 
         A1_list = [A1_list, RA1];
         B1_list = [B1_list, RA2];
         A2_list = [A2_list, RB1];
         B2_list = [B2_list, RB2];
 
-        min_rate = min([RA1,RA2,RB1,RB2]);
         min_list = [min_list, min_rate];
 
-    end
+    end % End of power value iteration
 
     A1_master_list = cat(1,A1_master_list,A1_list);
     B1_master_list = cat(1,B1_master_list,B1_list);
@@ -188,13 +165,13 @@ for seed = 1:num_seeds
     B2_master_list = cat(1,B2_master_list,B2_list);
     min_master_list = cat(1,min_master_list,min_list);
 
-end
+end % End of random seed iteration
 
 close(f)
 
 figure(1)
-plot(L_list,mean(min_master_list));
-xlabel('Number of IRS elements')
+plot(power_list,mean(min_master_list));
+xlabel('Maximum power at transmitters (dBm)')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 
 
@@ -202,20 +179,20 @@ ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 figure(2)
 t = tiledlayout(2,2);
 nexttile
-plot(L_list,mean(A1_master_list));
-xlabel('Number of IRS elements')
+plot(power_list,mean(A1_master_list));
+xlabel('Maximum power at transmitters (dBm)')
 ylabel('A1 secrecy Rate(bits/sec/Hz)')
 nexttile
-plot(L_list,mean(A2_master_list));
-xlabel('Number of IRS elements')
+plot(power_list,mean(A2_master_list));
+xlabel('Maximum power at transmitters (dBm)')
 ylabel('A2 secrecy Rate(bits/sec/Hz)')
 nexttile
-plot(L_list,mean(B1_master_list));
-xlabel('Number of IRS elements')
+plot(power_list,mean(B1_master_list));
+xlabel('Maximum power at transmitters (dBm)')
 ylabel('B1 secrecy Rate(bits/sec/Hz)')
 nexttile
-plot(L_list,mean(B2_master_list));
-xlabel('Number of IRS elements')
+plot(power_list,mean(B2_master_list));
+xlabel('Maximum power at transmitters (dBm)')
 ylabel('B2 secrecy Rate(bits/sec/Hz)')
 
 
@@ -229,20 +206,6 @@ function H = get_H(dti,dir,dtr,wave_l,L,Lo,pl,rng_val)
     htr = sqrt(Lo)*gtr;
     H = cat(1,hti.*hir, htr);
 end
-
-% %%%  , peves1, peves2, peves3, eves1, eves2, eves3
-
-% %A1  from B1
-% , PA1, PB2, PA2, HA1C, HB2C, HA2C
-
-% %A2  from B2
-% , PA1, PB1, PA2, HA1C, HB1C, HA2C
-
-% %B1  from A1
-% , PB1, PB2, PA2, HB1C, HB2C, HA2C
-
-% %B2  from A2
-% , PA1, PB1, PB2, HA1C, HB1C, HB2C
 
 function grad_S = get_grad_S(W, pinf1, inf1, pinf2, inf2, psec, sec, peves1, peves2, peves3, eves1, eves2, eves3)
     sigma_ab = 10^(-14.5);
@@ -322,12 +285,35 @@ function Q = get_Q(W,inf1, inf2, eves,pinf1, pinf2, peves, peves1, peves2, peves
 
 end
 
-function power = get_power(string_value)
+function power = get_power(string_value,pmax)
     pmin = 0.001;
-    pmax = 0.04;
+
     if string_value == '0' 
         power = pmin;
     else 
         power = pmax;
     end
 end
+
+function power = dbm2watt(dbm_value)
+
+    power = (10^(dbm_value/10))*(10^(-3));
+
+end
+
+% % To initiate Gaussian Random vector for Gaussian Randomization method
+% 
+% r = sqrt(1/2)*(randn(L+1,N)+1i*randn(L+1,N));
+% w_bar = U*sqrt(D)*r;
+% obj = w_bar'*(H11*H11')*w_bar;
+% 
+% obj_diag = diag(obj);
+% [value,argu] = max(real(obj_diag));
+% 
+% opt_w_bar = w_bar(:,argu);
+% opt_w_unnormal = opt_w_bar(1:end-1)/opt_w_bar(end);
+% 
+% % The optimal reflection matrix
+% opt_w = exp(1i*angle(opt_w_unnormal));
+
+% Taking the 1st column instead of using Gaussian Randomization

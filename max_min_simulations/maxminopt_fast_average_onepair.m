@@ -140,7 +140,7 @@ for seed = 1:num_seeds
 
                 cvx_end
 
-                t_new = t;
+                t_new = t
                 if abs(t_new-t_old)<0.001
                     j
                     t_old = 0;
