@@ -8,15 +8,167 @@ coords = [-2.24 6.18;4.59 7.21;-23.78 5.05;
 ];
 
 global dist;
-dist = sqDistance(coords, coords)
+dist = sqDistance(coords, coords);
 global n;
 n = 5;
 
+global user_list;
+user_list = [];
+
+for j = 1:n
+
+    string1 = string(strcat('A',num2str(j)));
+    user_list = [user_list string1];
+    string2 = string(strcat('B',num2str(j)));
+    user_list = [user_list string2];
+
+end
+
+
+
+% y = permute(pagemtimes(permute(r,[1 3 2]),t),[1 3 2])
 % leg_H_stack = leg_inf_with_opp('B4');
-eves_H_stack_self = eves_inf_with_self('A3');
+% eves_H_stack_self = eves_inf_with_self('A3');
+
+% eves_H_stack_self = eves_inf_all();
+
+%%%%%
+
+% max_min = 0;
+% max_min_ind = 0;
+
+% for i = 0:(2^(2*n)-1)
+
+%     power_string = num2str(dec2bin(i,2*n));
+%     P_array = get_power_values(power_string,max_power,min_power);
+%     min_value = get_min_rate(P_array);
+
+%     if (min_value > max_min)
+
+%         max_min = min_value;
+%         max_min_ind = i;
+%     end
+% end
+
+% power_string = num2str(dec2bin(max_min_ind,2*n));
+% P_array = get_power_values(power_string,max_power,min_power);
+
+%%%%%
+
+% P_array = get_power_values('101010001',15,0);
+
+
+
+
+% classdef EavesNode
+%     properties
+%         inf_all
+%         inf_without_opposite
+%     end
+% end
+
+leg_inf_stacks = get_stacks("leg_inf");
+leg_inf_with_opp_stacks = get_stacks("leg_inf_with_opp");
+eves_inf_with_self_stacks = get_stacks("eves_inf_with_self");
+eves_stack = eves_inf_all();
+
+function stacks = get_stacks(stack_type)
+    global user_list;
+
+    temp_stack = [];
+
+    for i = 1:length(user_list)
+        if stack_type == "leg_inf"
+            temp_stack = cat(4,temp_stack,leg_inf(char(user_list(i))));
+        end
+        if stack_type == "leg_inf_with_opp"
+            temp_stack = cat(4,temp_stack,leg_inf_with_opp(char(user_list(i))));
+        end
+        if stack_type == "eves_inf_with_self"
+            temp_stack = cat(4,temp_stack,eves_inf_with_self(char(user_list(i))));            
+        end
+    end
+
+    stacks = temp_stack;
+end
+
+
+function power_array = get_power_values(string_val, dbmax, dbmin)
+
+    pmax = dbm2watt(dbmax);
+    pmin = dbm2watt(dbmin);
+
+    power_list = [];
+
+    for r = 1:length(string_val)
+        if string_val(r) == '0' 
+            power_list = [power_list pmin];
+        else
+            power_list = [power_list pmax];
+        end
+    end
+    
+    power_array = power_list;
+
+end
+
+function min_rate = get_min_rate(power_list)
+
+    global user_list;
+    rate_list = [];
+
+    for i = 1:length(user_list)
+        rate_list = [rate_list get_rate(user_list(i), power_list)];
+    end
+
+    min_rate = min(rate_list)
+
+end
+
+function rate = get_rate(user, power_list)
+
+
+end
+
+function power = get_power(string_value,pmax)
+    pmin = 0.001;
+
+    if string_value == '0' 
+        power = pmin;
+    else 
+        power = pmax;
+    end
+end
+
+function power = dbm2watt(dbm_value)
+
+    power = (10^(dbm_value/10))*(10^(-3));
+end
 
 function D = sqDistance(X, Y)
     D = sqrt(bsxfun(@plus,dot(X,X,2)',dot(Y,Y,2))-2*(X*Y'));
+end
+
+function eves_inf = eves_inf_all()
+
+    global n;
+
+    eligible_eves_list = [];
+
+    for j = 1:n
+
+        string1 = string(strcat('A',num2str(j)));
+        eligible_eves_list = [eligible_eves_list string1];
+        string2 = string(strcat('B',num2str(j)));
+        eligible_eves_list = [eligible_eves_list string2];
+
+    end
+
+    eligible_eves_list
+
+    indices_list = convert2indices(eligible_eves_list)
+    eves_inf = get_eves_inf(indices_list);
+
 end
 
 function eves_inf = eves_inf_with_self(node_name)
