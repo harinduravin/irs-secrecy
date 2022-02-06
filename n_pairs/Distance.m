@@ -58,7 +58,7 @@ eves_stack = eves_inf_all();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Power optimization
-% All the vertices in the 2N-D box are checked to find the max-min power
+% All the vertices in the (2N)-D box are checked to find the max-min power
 % setting
 %
 max_min = 0;
@@ -114,6 +114,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function cvx_leg_inf = get_cvx_leg_inf(user, power_list)
+    % Calculating legitimate user interference terms
+    %
 
     user_id = get_index(user);
     global leg_inf_with_opp_stacks;
@@ -123,6 +125,8 @@ function cvx_leg_inf = get_cvx_leg_inf(user, power_list)
 end
 
 function cvx_eve_inf = get_cvx_eve_inf(user, power_list)
+    % Calculating evesdropper interference terms
+    %
 
     user_id = get_index(user);
     global eves_inf_with_self_stacks;
@@ -132,6 +136,9 @@ function cvx_eve_inf = get_cvx_eve_inf(user, power_list)
 end
 
 function grad_S = get_grad_S(user, power_list, W)
+    % Obtaining grad_S for Taylor approximation lower bound in the CVX implementation.
+    % The return matrix depends on the specified user.
+    %
 
     user_id = get_index(user);
 
@@ -156,6 +163,10 @@ function grad_S = get_grad_S(user, power_list, W)
 end
 
 function stacks = get_stacks(stack_type)
+    % Collecting stacks of channels into 4-D array for later use
+    % according to stack_type specified
+    %
+
     global user_list;
 
     temp_stack = [];
@@ -177,12 +188,17 @@ end
 
 
 function power_array = get_power_values(string_val, dbmax, dbmin)
+    % This function generates a list of power values from the representative string
+    % Eg-: '1001001'  --> [pmax pmin pmin pmax pmin pmin pmax]
+    % 1 is replaced by pmax, 0 is replaced by pmin. pmin and pmax are specified in dBm.
 
+    % Converting from dBm to watt
     pmax = dbm2watt(dbmax);
     pmin = dbm2watt(dbmin);
 
     power_list = [];
 
+    % Generating the list
     for r = 1:length(string_val)
         if string_val(r) == '0' 
             power_list = [power_list pmin];
@@ -196,21 +212,30 @@ function power_array = get_power_values(string_val, dbmax, dbmin)
 end
 
 function min_rate = get_min_rate(power_list)
+    % Obtains a list of data rates for all users for a given power setting.
+    % After obtaining the list, the minimum of all rates is obtained.
+    %
 
     global user_list;
     rate_list = [];
 
+    % Looping through all users
     for i = 1:length(user_list)
         rate_list = [rate_list get_rate(user_list(i), power_list)];
     end
 
     rate_list;
 
+    % Returning the minimum rate
     min_rate = min(rate_list);
 
 end
 
 function rate = get_rate(user, power_list)
+    % Returns the datarate achieved by a given user, at a given power setting.
+    % This requires retrieving the channels stacks stored after generation.
+    % The dot_product function is used to obtain the interference terms.
+    %
 
     user_id = get_index(user);
 
@@ -221,6 +246,7 @@ function rate = get_rate(user, power_list)
     global eves_stack;
 
     % Choose filter modes from ["leg_inf" "eves_inf_with_self" "leg_inf_with_opp" "eves_inf_all"]
+    % Retrieving suitable power arrays for dot_product function
     eves_power_with_self = filter_power_values(char(user), power_list,"eves_inf_with_self");
     leg_power_with_opp = filter_power_values(char(user), power_list,"leg_inf_with_opp");
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
