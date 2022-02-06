@@ -53,7 +53,7 @@ for j = 1:inner_iter
         norm((X-W),1)<=2;
 
     cvx_end
-
+end
 % function grad = get_grad_S(node_name)
 
 % end
