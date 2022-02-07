@@ -1,6 +1,9 @@
-classdef UserNode
-    properties
-        inf_with_pair
-        inf_without_pair    
-    end
+global vari;
+for vari = 1:5
+    test_func(3)
+end
+
+function ret = test_func(q)
+    global vari;
+    ret = q*vari;
 end

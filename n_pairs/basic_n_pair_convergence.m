@@ -1,9 +1,21 @@
-coords = [-2.24 6.18;4.59 7.21;-23.78 5.05;
--18.59 8.85;-12.37 -4.52;-14.86 -9.01;
-23.38 10.60;17.39 13.63;20.16 -3.91;
-21.84 -10.31;-0.09 -16.47;5.98 -6.85;
-];
+% Initializing number of pairs
+global n;
+n = 3;
 
+% Position of all the nodes
+% n = 5
+% coords = [-2.24 6.18;4.59 7.21;-23.78 5.05;
+% -18.59 8.85;-12.37 -4.52;-14.86 -9.01;
+% 23.38 10.60;17.39 13.63;20.16 -3.91;
+% 21.84 -10.31;-0.09 -16.47;5.98 -6.85;
+% ];
+
+% n = 3
+coords = [-23.35 7.22;13.19 2.78;-6.00 9.54;
+21.95 -15.11;-5.78 -8.61;4.25 2.81;
+0.58 -12.83;-13.15 3.80;];
+
+% n = 2
 % coords = [19.60 -10.08;15.89 -5.34;-14.91 4.70;
 % -9.32 8.98;0.18 -17.07;10.01 17.55;
 % ];
@@ -12,15 +24,20 @@ coords = [-2.24 6.18;4.59 7.21;-23.78 5.05;
 global dist;
 dist = sqDistance(coords, coords);
 
-global n;
-n = 5;
-
+% Number of elements in the IRS
 global L;
 L = 10;
 
+% Residual interference and noise values
+sigma_c = 10^(-14.5);
+sigma_ab = 10^(-14.5);
+sigma_loop = 10^(-14);
+
+% Maximum and minimum transmit powers of users in dB
 max_power = 15;
 min_power = 0;
 
+% Preparing all the users in a list
 global user_list;
 user_list = [];
 
@@ -32,85 +49,109 @@ for j = 1:n
     user_list = [user_list string2];
 end
 
-% IRS reflection matrix (Initialized randomly)
-wi = exp(1i*(2*rand(L,1)-1)*pi);
-w = [wi ; 1].';
-
-global W; % Check this again
-W = w'*w;
-
-sigma_c = 10^(-14.5);
-sigma_ab = 10^(-14.5);
-sigma_loop = 10^(-14);
-
-% Generating all the channels before algorithm loop starts
-%
-global leg_inf_with_opp_stacks;
-global eves_inf_with_self_stacks;
-global leg_inf_stacks;
-global eves_stack;
-
-leg_inf_stacks = get_stacks("leg_inf");
-leg_inf_with_opp_stacks = get_stacks("leg_inf_with_opp");
-eves_inf_with_self_stacks = get_stacks("eves_inf_with_self");
-eves_stack = eves_inf_all();
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+min_master_list = [];
 
-% Power optimization
-% All the vertices in the (2N)-D box are checked to find the max-min power
-% setting
-%
-max_min = 0;
-max_min_ind = 0;
+num_seeds = 20 - 1;
+f = waitbar(0,'Please wait...');
 
-for i = 0:(2^(2*n)-1)
+global seed;
+for seed = 0:num_seeds
 
-    power_string = num2str(dec2bin(i,2*n));
-    P_array = get_power_values(power_string,max_power,min_power);
-    min_value = get_min_rate(P_array);
+    waitbar(seed/num_seeds,f,'Simulating...');
+    min_list = [];
 
-    if (min_value > max_min)
+    % IRS reflection matrix (Initialized randomly)
+    wi = exp(1i*(2*rand(L,1)-1)*pi);
+    w = [wi ; 1].';
 
-        max_min = min_value;
-        max_min_ind = i;
-    end
-end
+    global W; % Check this again
+    W = w'*w;
 
-power_string = num2str(dec2bin(max_min_ind,2*n));
-P_array = get_power_values(power_string,max_power,min_power);
+    % Generating all the channels before algorithm loop starts
+    %
+    global leg_inf_with_opp_stacks;
+    global eves_inf_with_self_stacks;
+    global leg_inf_stacks;
+    global eves_stack;
 
+    leg_inf_stacks = get_stacks("leg_inf");
+    leg_inf_with_opp_stacks = get_stacks("leg_inf_with_opp");
+    eves_inf_with_self_stacks = get_stacks("eves_inf_with_self");
+    eves_stack = eves_inf_all();
 
-% Reflection phase optimization
-% inner_iter times Successive Convex Approximation (SCA)
-%
-inner_iter = 20;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    outer_iter = 1;
 
-for j = 1:inner_iter
+    for j = 1:outer_iter
+        % Power optimization
+        % All the vertices in the (2N)-D box are checked to find the max-min power
+        % setting
+        %
+        max_min = 0;
+        max_min_ind = 0;
 
-    cvx_begin quiet
-    cvx_solver Mosek
-    variable X(L+1,L+1) complex semidefinite %symmetric
-    variable t
+        for i = 0:(2^(2*n)-1)
 
-    minimize t
+            power_string = num2str(dec2bin(i,2*n));
+            P_array = get_power_values(power_string,max_power,min_power);
+            min_value = get_min_rate(P_array);
 
-    subject to
+            if (min_value > max_min)
 
-        for u = 1:length(user_list)
-
-            -log(real(trace(get_cvx_leg_inf(user_list(u),P_array)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_array)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_array,W)*(X-W))) <= t;
+                max_min = min_value;
+                max_min_ind = i;
+            end
         end
 
-        diag(X) == 1;
-        norm((X-W),1)<=2;
+        power_string = num2str(dec2bin(max_min_ind,2*n));
+        P_array = get_power_values(power_string,max_power,min_power);
 
-    cvx_end
 
-    W = X;
-    min_value = get_min_rate(P_array)
-end
+        % Reflection phase optimization
+        % inner_iter times Successive Convex Approximation (SCA)
+        %
+        inner_iter = 15;
 
+        for j = 1:inner_iter
+
+            cvx_begin quiet
+            cvx_solver Mosek
+            variable X(L+1,L+1) complex semidefinite %symmetric
+            variable t
+
+            minimize t
+
+            subject to
+
+                for u = 1:length(user_list)
+
+                    -log(real(trace(get_cvx_leg_inf(user_list(u),P_array)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_array)    *X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_array,W)*(X-W))) <= t;
+                end
+
+                diag(X) == 1;
+                % norm((X-W),1)<=2*exp(-outer_iter/2);
+                norm((X-W),1)<=2;
+            cvx_end
+
+            W = X;
+            min_value = get_min_rate(P_array)
+            % min_value = t;
+            min_list = [min_list, min_value];
+
+        end % end of inner iteration
+    end % end of outer iteration
+
+    min_master_list = cat(1,min_master_list,min_list);
+end % end of random seed iteration
+
+close(f)
+
+iter_list = 1:inner_iter*outer_iter;
+figure(1)
+plot(iter_list,mean(min_master_list));
+xlabel('Number of iterations')
+ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function cvx_leg_inf = get_cvx_leg_inf(user, power_list)
@@ -264,7 +305,7 @@ function rate = get_rate(user, power_list)
     eves_inf = log2(1 + trace((eves_inf_term2 - eves_inf_term1)*W)/(trace(eves_inf_term1*W) + sigma_c));
 
     leg_inf = log2(1 + trace((leg_inf_term2 - leg_inf_term1)*W)/(trace(leg_inf_term1*W) + sigma_ab + sigma_loop));
-    rate = real(leg_inf - eves_inf);
+    rate = max(0,real(leg_inf - eves_inf));
 
 end
 
@@ -539,6 +580,7 @@ function leg_channel = get_leg_channel(rx_index,tx_index)
     global dist;
     global n;
     global L;
+    global seed;
 
     Lo = 10^(-3);
     pl = 2;
@@ -550,10 +592,28 @@ function leg_channel = get_leg_channel(rx_index,tx_index)
     dir = dist(irs_index, rx_index);
     dtr = dist(rx_index,tx_index);
 
-    H = get_H(dti,dir,dtr,L,Lo,pl,1); % TODO Change this line to complete the randomness
+    % Calculation of the random seed from rx_index and tx_index
+    total_channels = 2*n^2 + n;
+    % total_leg_channels = 2*n^2 - n;
 
+    start_val_leg = seed*total_channels;
+    u = zeros(2*n,2*n);
+    p = start_val_leg;
+    for i = 1:2*n
+        for j = 1:2*n
+            if j>i
+                p = p+1;
+                u(j,i) = p;
+            end
+
+        end
+    end
+    nmatrix = u + u';
+
+    input_seed = nmatrix(rx_index,tx_index);
+
+    H = get_H(dti,dir,dtr,L,Lo,pl,input_seed); % TODO Change this line to complete the randomness
     leg_channel = H*H';
-
 end
 
 function eves_channel = get_eves_channel(tx_index)
@@ -566,6 +626,7 @@ function eves_channel = get_eves_channel(tx_index)
     global dist;
     global n;
     global L;
+    global seed;
 
     Lo = 10^(-3);
     pl = 2;
@@ -578,7 +639,14 @@ function eves_channel = get_eves_channel(tx_index)
     dir = dist(irs_index, rx_index);
     dtr = dist(rx_index,tx_index);
 
-    H = get_H(dti,dir,dtr,L,Lo,pl,1); % TODO Change this line to complete the randomness
+    % Calculation of the random seed from rx_index and tx_index
+    total_channels = 2*n^2 + n;
+    total_leg_channels = 2*n^2 - n;
+    start_val_eve = seed*total_channels+total_leg_channels;
+
+    input_seed = tx_index + start_val_eve;
+
+    H = get_H(dti,dir,dtr,L,Lo,pl,input_seed); % TODO Change this line to complete the randomness
 
     eves_channel = H*H';
 
