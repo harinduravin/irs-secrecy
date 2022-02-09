@@ -22,7 +22,7 @@ class Circle {
 let bg
 
 function setup() {
-  n = 3
+  n = 2
   hover = null
   grabbed = null
   tx_circle = null
