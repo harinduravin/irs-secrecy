@@ -22,7 +22,7 @@ class Circle {
 let bg
 
 function setup() {
-  n = 2
+  n = 5
   hover = null
   grabbed = null
   tx_circle = null
@@ -78,7 +78,7 @@ function mouseReleased() {
   counter = 0
   for (let c of circles) {
     counter = counter+1
-    text_value = text_value + (c.p.x*2/25-28).toFixed(2) + ' ' + (c.p.y*2/25-20).toFixed(2) + ';'
+    text_value = text_value + (c.p.x*2/25-28).toFixed(2) + ' ' + (20-c.p.y*2/25).toFixed(2) + ';'
     if (counter%3 == 0) {
       text_value = text_value + '\n'
     }

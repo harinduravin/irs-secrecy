@@ -1,24 +1,30 @@
 % Initializing number of pairs
 global n;
-n = 2;
+n = 5;
 
 % Position of all the nodes
 % n = 5
-% coords = [-2.24 6.18;4.59 7.21;-23.78 5.05;
-% -18.59 8.85;-12.37 -4.52;-14.86 -9.01;
-% 23.38 10.60;17.39 13.63;20.16 -3.91;
-% 21.84 -10.31;-0.09 -16.47;5.98 -6.85;
+coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
+-16.70 -10.30;-3.39 -2.34;1.74 -2.41;
+16.44 -6.14;20.99 -2.66;23.06 18.20;
+21.79 12.58;-0.83 18.29;2.15 13.24;
+];
+
+% n = 2
+% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
+% -16.70 -10.30;-0.83 18.29;2.15 13.24;
 % ];
 
 % n = 3
-% coords = [-23.35 7.22;13.19 2.78;-6.00 9.54;
-% 21.95 -15.11;-5.78 -8.61;4.25 2.81;
-% 0.58 -12.83;-13.15 3.80;];
+% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
+% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
+% -0.83 18.29;2.15 13.24;];
 
-% n = 2
-coords = [6.50 -11.21;11.26 -7.04;-7.67 -11.28;
--13.88 -7.22;0.13 -14.27;14.89 -3.46;
-];
+% n = 4
+% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
+% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
+% 16.44 -6.14;20.99 -2.66;-0.83 18.29;2.15 13.24;
+% ];
 
 % Preparing the Euclidean distance matrix
 global dist;
@@ -50,11 +56,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 105 - 1;
 f = waitbar(0,'Please wait...');
+
 
 global seed;
 for seed = 0:num_seeds
+    seed_flag = 0;
 
     waitbar(seed/num_seeds,f,'Simulating...');
     min_list = [];
@@ -123,36 +131,50 @@ for seed = 0:num_seeds
 
             for j = 1:inner_iter
 
-                cvx_begin quiet
-                cvx_solver Mosek
-                variable X(L+1,L+1) complex semidefinite %symmetric
-                variable t
+                try
 
-                minimize t
+                    cvx_begin quiet
+                    cvx_solver Mosek
+                    variable X(L+1,L+1) complex semidefinite %symmetric
+                    variable t
 
-                subject to
+                    minimize t
 
-                    for u = 1:length(user_list)
+                    subject to
 
-                        -log(real(trace(get_cvx_leg_inf(user_list(u),P_array)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_array)    *X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_array,W)*(X-W))) <= t;
-                    end
+                        for u = 1:length(user_list)
 
-                    diag(X) == 1;
-                    % norm((X-W),1)<=2*exp(-outer_iter/2);
-                    norm((X-W),1)<=2;
-                cvx_end
+                            -log(real(trace(get_cvx_leg_inf(user_list(u),P_array)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_array)    *X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_array,W)*(X-W))) <= t;
+                        end
+
+                        diag(X) == 1;
+                        % norm((X-W),1)<=2*exp(-outer_iter/2);
+                        norm((X-W),1)<=2;
+                    cvx_end
+                catch
+
+                    fprintf("Error occured")
+                    seed
+                    seed_flag = 1;
+                    break;
+                end
 
                 W = X;
 
 
             end % end of inner iteration
+            if seed_flag == 1
+                break;
+            end
         end % end of outer iteration
+        if seed_flag == 1
+            break;
+        end
 
-        min_value = get_min_rate(P_array)
+        min_value = get_min_rate(P_array);
         min_list = [min_list, min_value];
 
     end % end of L iteration
-
     min_master_list = cat(1,min_master_list,min_list);
 end % end of random seed iteration
 
@@ -160,7 +182,7 @@ close(f)
 
 figure(1)
 plot(L_list,mean(min_master_list));
-xlabel('Number of iterations')
+xlabel('Number of elements')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
