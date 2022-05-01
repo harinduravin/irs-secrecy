@@ -23,6 +23,7 @@ for e = 1:length(ES)
         T_symbol = sqrt(Es).*(2.*Data-1); % Mapping to BPSK transmit symbols
 
         h = sqrt(1/2)*(randn(1,N)+1i*(randn(1,N))); % rayleigh fading channel
+        hr = 
         n = sqrt(1/2)*(randn(1,N)+1i*(randn(1,N))); % complex noise
 
         y = T_symbol.*h + n;

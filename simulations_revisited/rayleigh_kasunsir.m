@@ -1,9 +1,10 @@
 clear;
-N = 10000000;
-p = 1;
+N = 1000000;
+p = 1/sqrt(2);
 x1 = p*randn([1 N]);
 x2 = p*randn([1 N]);
 
+% A vector of Rayleigh distributed random variables (r)
 y = x1 + 1i*(x2);
 r = abs(y);
 
