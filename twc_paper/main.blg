@@ -1,0 +1,64 @@
+This is BibTeX, Version 0.99d (TeX Live 2022)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: IEEEabrv.bib
+Database file #2: IEEEexample.bib
+Warning--I didn't find a database entry for "ref1"
+Warning--I didn't find a database entry for "ref2"
+Warning--I didn't find a database entry for "ref3"
+Warning--I didn't find a database entry for "ref4"
+Warning--I didn't find a database entry for "ref5"
+Warning--I didn't find a database entry for "ref9"
+-- IEEEtran.bst version 1.11 (2003/04/02) by Michael Shell.
+-- http://www.ctan.org/tex-archive/macros/latex/contrib/supported/IEEEtran/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 2 entries,
+            3975 wiz_defined-function locations,
+            1338 strings with 17700 characters,
+and the built_in function-call counts, 1290 in all, are:
+= -- 96
+> -- 28
+< -- 9
++ -- 15
+- -- 5
+* -- 70
+:= -- 214
+add.period$ -- 3
+call.type$ -- 2
+change.case$ -- 2
+chr.to.int$ -- 18
+cite$ -- 2
+duplicate$ -- 89
+empty$ -- 96
+format.name$ -- 6
+if$ -- 273
+int.to.chr$ -- 0
+int.to.str$ -- 2
+missing$ -- 18
+newline$ -- 28
+num.names$ -- 1
+pop$ -- 46
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 94
+stack$ -- 0
+substring$ -- 43
+swap$ -- 72
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 0
+warning$ -- 0
+while$ -- 5
+width$ -- 3
+write$ -- 39
+(There were 6 warnings)
