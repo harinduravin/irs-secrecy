@@ -135,7 +135,7 @@ function cvx_eve_inf = get_cvx_eve_inf(user, power_list)
     global eves_inf_with_self_stacks;
     eves_power_with_self = filter_power_values(char(user), power_list,"eves_inf_with_self");
     cvx_eve_inf = dot_product(eves_power_with_self',eves_inf_with_self_stacks(:,:,:,user_id));
-    
+
 end
 
 function grad_S = get_grad_S(user, power_list, W)
