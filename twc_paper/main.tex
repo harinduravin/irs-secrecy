@@ -10,6 +10,7 @@
 \usepackage{verbatim}
 \usepackage{graphicx}
 \usepackage{cite}
+%\usepackage{optidef}
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
 % updated with editorial comments 8/9/2021
 
@@ -24,7 +25,7 @@
 
 \title{Max-Min Fairness for IRS-Assisted Secure Two-Way Communications}
 
-\author{IEEE Publication Technology,~\IEEEmembership{Staff,~IEEE,}
+\author{Author name,~\IEEEmembership{Staff,~IEEE,}
         % <-this % stops a space
 \thanks{This paper was produced by the IEEE Publication Technology Group. They are in Piscataway, NJ.}% <-this % stops a space
 \thanks{Manuscript received April 19, 2021; revised August 16, 2021.}}
@@ -33,7 +34,7 @@
 \markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2021}%
 {Shell \MakeLowercase{\textit{et al.}}: A Sample Article Using IEEEtran.cls for IEEE Journals}
 
-\IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
+\IEEEpubid{0000--0000/00\$00.00~\copyright~2022 IEEE}
 % Remember, if you use this you must call \IEEEpubidadjcol in the second
 % column for its text to clear the IEEEpubid mark.
 
@@ -51,18 +52,28 @@ Article submission, IEEE, IEEEtran, journal, \LaTeX, paper, template, typesettin
 
 Intelligent reflecting surface (IRS)
 
-\begin{itemize}
-\item Start general on IRSs
-\item Talk about physical layer security
-\item Then talk about related work
-\item An explanation of our contribution
-\item A summary of our contribution
-\end{itemize}
+%\begin{itemize}
+%\item Start general on IRSs
+%\item Talk about physical layer security
+%\item Then talk about related work
+%\item An explanation of our contribution
+%\item A summary of our contribution
+%\end{itemize}
 
-\textit{Notations:} Bold symbols in capital letter and small letter denote matrices and vectors, respectively.
+\textit{Notations:} Bold symbols in capital letter and small letter denote matrices and vectors, respectively...
 
 
-\section{System Model}
+
+$\mathcal{CN}(\mu,\sigma^2)$ denotes the distribution of a \textit{circularly symmetric complex Gaussian} (CSCG) random variable of mean $\mu$ and variance $\sigma^2$.
+
+Check $\mathbb{C}^{x\times y}$ notation as well
+
+$(a)^{+} = max(0,a)$ 
+
+
+\section{System Model and Problem Formulation}
+
+\subsection{System Model}
 
 %Multiple user pairs ($P$) are scattered near an IRS consisting of $L$ elements. In the p\textsuperscript{th} pair, two users can be identified as Ap and Bp. Each user consist of a single antenna receiver and a single antenna transmitter. Each pair is communicating in Full-Duplex mode in the presence of a single antenna eavesdropper denoted by C.\newline
 
@@ -72,16 +83,129 @@ Intelligent reflecting surface (IRS)
 
 %\textcolor{red}{The effective channel from both the direct path and through the IRS can be denoted as $\mathbf{H}_{ij}^T =  [\boldsymbol{h}_i^{T} diag(\boldsymbol{h}_j) \; h_{ij}] \in \mathbb{C}^{L+1\times1}$.}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this paper we consider a secure communication environment consisting of an IRS as shown in Fig. 1. An IRS consisting of $L$ elements is deployed to assist the secure communication among $2P$ users over a given single frequency band. A pre-determined set of $P$ user pairs communicate with each other using two-way communication. Hence, the $2P$ users can be divided into two exhaustive sets of users denoted by $\mathcal{J}$ and $\mathcal{K}$, each consisting of $P$ users. Each user consist of a single-antenna receiver and a single-antenna transmitter. 
+%In this paper we consider a secure communication environment consisting of an IRS as shown in Fig. 1. An IRS consisting of $L$ elements is deployed to assist the secure communication among $2P$ users over a given single frequency band. A pre-determined set of $P$ user pairs communicate with each other using two-way communication. Hence, the $2P$ users can be divided into two exhaustive sets of users denoted by $\mathcal{J}$ and $\mathcal{K}$, each consisting of $P$ users. Each user consist of a single-antenna receiver and a single-antenna transmitter. 
 
-Let $h_{jk} \in \mathbb{C}^{1\times1}$, $j \in \mathcal{J}$, $k \in \mathcal{K}$ denote the direct channel from user $j$ to user $k$, $\boldsymbol{f}_j \in \mathbb{C}^{L\times1}$, $j \in \mathcal{J}$ denote that from the user $j$ to the IRS and $\boldsymbol{g}_k \in \mathbb{C}^{L\times1}$, $k \in \mathcal{K}$ denote that from the user $k$ to the IRS. Let $\boldsymbol{\omega}_{ind}^\dag = [e^{j\phi_{1}},...,e^{j\phi_{L}}]$ denote the reflection matrix of the IRS where, $\phi_{i} \in [0,2 \pi)$ for $i = \{1,...,L\}$ is the phase shift of the i-th element of the IRS.
+In this paper we consider an IRS assisted two-way communication system as shown in Fig. \ref{fig_system}. The communication environment consists of $N$ pairs of legitimate users denoted by $\mathcal{U} \triangleq \{A_i, B_i\}$ for $i = 1,...,N$, that can be divided into group $A$ and group $B$. The legitimate users are exposed to an single-antenna eavesdropper $E$ that can overhear the confidential information exchanged between the user pairs. An IRS consisting of $L$ elements is deployed to assist the secure communication. Each legitimate user consist of a single-antenna receiver and a single-antenna transmitter facilitating in-band full-duplex (FD) communication. 
 
-The effective channel from the user $j \in \mathcal{J}$ to user $k \in \mathcal{K}$ due to direct path and cascaded user-IRS-user channel can be expressed as $\boldsymbol{\omega}^\dag \mathbf{H}_{jk}$, where $\boldsymbol{\omega}^\dag = [ \boldsymbol{\omega}_{ind}^\dag \;\; 1 ]$ and $\mathbf{H}_{jk}^T =  [\boldsymbol{f}_j^{T} diag(\boldsymbol{g}_k) \; h_{jk}] \in \mathbb{C}^{1\times L+1}$. The information symbols transmitted by the users are $s_{j} \in \mathcal{CN}(0,1)$, $j \in \mathcal{J}$ and $t_{k} \in \mathcal{CN}(0,1)$, $k \in \mathcal{K}$ respectively. The power transmitted by the users are denoted by $P_{j}$, $j \in \mathcal{J}$ and $Q_{k}$, $k \in \mathcal{K}$.
+It is assumed that the global channel state information (CSI) of the legitimate users and the eavesdropper is available at the centralized system consisting of all the users and the IRS. The control information and the CSI is exchanged using low bandwidth links. CSI estimation is carried out exploiting the channel reciprocity property.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=2.5in]{images/test}
+\caption{IRS-Assisted secure multi-pair communication model.(Work in progress)}
+\label{fig_system}
+\end{figure}
 
 
+Let $h_{jk} \in \mathbb{C}^{1\times1}$, $j = 1,...,N$, $k = 1,...,N$ denote the direct channel from user $A_j$ to user $B_k$, $\boldsymbol{f}_j \in \mathbb{C}^{L\times1}$, $j = 1,...,N$ denote that from the user $A_j$ to the IRS and $\boldsymbol{g}_k \in \mathbb{C}^{L\times1}$, $k = 1,...,N$ denote that from the user $B_k$ to the IRS. The direct channels from users $A_j$ and $B_k$ to the eavesdropper $E$ are denoted by $f_{je} \in \mathbb{C}^{1\times1}$, $j = 1,...,N$ and $g_{ke} \in \mathbb{C}^{1\times1}$, $k = 1,...,N$ respectively. The channel from the eavesdropper $E$ to the IRS is denoted by $\boldsymbol{q} \in \mathbb{C}^{L\times1}$.
+
+Let $\boldsymbol{\omega}_{ind}^\dag = [e^{j\phi_{1}},...,e^{j\phi_{L}}]$ denote the reflection matrix of the IRS where, $\phi_{i} \in [0,2 \pi)$ for $i = 1,...,L$ is the phase shift of the i-th element of the IRS. We have assumed full signal reflection for the ease of practical implementation and maximizing the reflected signal power from the IRS.
+
+The effective channel from the user $A_j$ to user $B_k$ due to direct path and cascaded user-IRS-user channel can be expressed as $\boldsymbol{\omega}^\dag \mathbf{H}_{A_j,B_k}$, where $\boldsymbol{\omega}^\dag = [ \boldsymbol{\omega}_{ind}^\dag \;\; 1 ]$ and $\mathbf{H}_{A_j,B_k}^T =  [\boldsymbol{f}_j^{T} diag(\boldsymbol{g}_k) \; h_{jk}] \in \mathbb{C}^{1\times (L+1)}$. Similarly, the effective channel from the user $A_j$ to eavesdropper $E$ can be expressed as $\boldsymbol{\omega}^\dag \mathbf{H}_{A_j,E}$, where $\mathbf{H}_{A_j,E}^T =  [\boldsymbol{f}_j^{T} diag(\boldsymbol{q}) \; f_{je}] \in \mathbb{C}^{1\times (L+1)}$. The information symbol and power transmitted by the user $A_j$ can be denoted as $s_{A_j} \in \mathcal{CN}(0,1)$ and $P_{A_j}$ respectively. Let $\mathbf{P} = [P_{A_1}, P_{B_1}, ..., P_{A_N}, P_{B_N}]$ denote all the transmit powers of legitimate users.
+
+Without loss of generality, the received signal at user $A_j$ can be expressed as
+
+\begin{equation}
+\label{eqn1}
+\begin{split}
+ y_{A_j} & = \underbrace{\sqrt{P_{A_j}} \boldsymbol{\omega^\dag} \mathbf{H}_{A_j,A_j}s_{A_j}}_{\text{Self interference}} + \underbrace{\sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{A_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{A_i,A_j}s_{A_i}}_{\text{Inter-pair interference}}  \\& +  \underbrace{\sqrt{P_{B_j}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_j,A_j}s_{B_j}}_{\text{Desired signal}} + \underbrace{\sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{B_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_i,A_j}s_{B_i}}_{\text{Inter-pair interference}}  \\& + \underbrace{n_{A_j} + l_{A_j}}_{\text{Noise and loop interference}} ,
+\end{split}
+\end{equation}
+
+\IEEEpubidadjcol
+
+\noindent where $n_{A_j} \in \mathcal{N}(0,\sigma^2)$ is additive white Gaussian noise (AWGN) at $A_j$. The residual loop-interference after the FD-operation at $A_j$ is denoted by $l_{A_j}$, which is assumed to be a random variable of zero mean and variance $\sigma_{l}^2$. Since the global CSI is available at all the users, the self-interference term is assumed to be completely suppressed at the user $A_j$.
+
+Assuming the eavesdropper $E$ is wiretapping the signal emitted by user $A_j$, the received signal at the eavesdropper $E$ can be expressed as
+
+%%%%%%%%%%
+
+\begin{figure*}[!t]
+% ensure that we have normalsize text
+\normalsize
+% Store the current equation number. \setcounter{mytempeqncnt}{\value{equation}}
+% Set the equation number to one less than the one
+% desired for the first equation here.
+% The value here will have to changed if equations
+% are added or removed prior to the place these
+% equations are referenced in the main text. \setcounter{equation}{5}
+\begin{equation}
+\label{eqn_dbl_x}
+R_{A_j}^{B_j} = log_2 \left(1+ \frac{P_{B_j}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_j,A_j}|^2}{\sum_{\substack{i=1 \\ i\neq j}}^N { ( P_{A_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{A_i,A_j}|^2} + P_{B_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_i,A_j}|^2 ) + \sigma^2 + \sigma_{l}^2}\right)
+\end{equation}
+\begin{equation}
+\label{eqn_dbl_y}
+R_{A_j}^E = log_2 \left(1+ \frac{P_{B_j}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_j,E}|^2}{\sum_{i=1}^N {P_{A_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{A_i,E}|^2} + \sum_{\substack{i=1 \\ i\neq j}}^N {P_{B_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_i,E}|^2} + \sigma^2}\right)
+\end{equation}
+% Restore the current equation number. \setcounter{equation}{\value{mytempeqncnt}}
+% IEEE uses as a separator
+\hrulefill
+% The spacer can be tweaked to stop underfull vboxes. \vspace*{4pt}
+\end{figure*}
+
+%%%%%%%%%%
+
+
+\begin{equation}
+\label{eqn2}
+\begin{split}
+ y_{E} & = \underbrace{\sum_{i=1}^{N} \sqrt{P_{A_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{A_i,E}s_{A_i} + \sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{B_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_i,E}s_{B_i}}_{\text{Interference}} \\&+ \underbrace{\sqrt{P_{B_j}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_j,E}s_{B_j}}_{\text{Signal of interest}} + \underbrace{n_{E}}_{\text{Noise}} ,
+\end{split}
+\end{equation}
+
+\noindent where $n_{E} \in \mathcal{N}(0,\sigma^2)$ is additive white Gaussian noise (AWGN) at $E$.
+
+According to \eqref{eqn1}, the achievable transmission rate confidential message received at user $A_j$ can be expressed as \eqref{eqn_dbl_x}. According to \eqref{eqn2}, if the eavesdropper $E$ attempts to eavesdrop the signal from $A_j$, the achievable wiretapped rate at $E$ can be expressed as \eqref{eqn_dbl_y}. The individual secrecy-rate achieved by the user $A_j$ can be written as
+
+\begin{equation}
+\label{eqn3}
+C_{A_j} = \left[R_{A_j}^{B_j} - R_{A_j}^E \right]^{+}.
+\end{equation}
+
+
+
+\subsection{Problem Formulation}
+
+In this paper we maximize the minimum secrecy-rate among all the legitimate users $\mathcal{U}$ to achieve fairness by jointly optimizing the IRS reflection matrix $ \boldsymbol{\omega} $ and the transmit powers $\mathbf{P}$. The optimization problem is constrained by minimum and maximum individual transmit power constraints of the legitimate users. The optimization problem can be formulated as
+
+
+
+\begin{subequations}\label{eq:6}
+\begin{align}
+\text{(P1):} \quad \mathop{\max_{\boldsymbol{\omega},\mathbf{P}}} \; \min_{X\in\mathcal{U}} & \quad  C_{X} \label{eq:6A}\\
+\textrm{s.t.} \quad & |\omega^{(j)}| = 1 & \quad & \forall 1 \leq j \leq L, \label{eq:6B}\\
+  &\omega^{(L+1)} = 1 ,   \label{eq:6C}\\ & P_{\text{min}} \leq P_{X} \leq P_{\text{max}} & \quad & \forall X\in\mathcal{U}. \label{eq:6D}
+\end{align}
+\end{subequations}
+
+The $j$-th element of the vector $\boldsymbol{\omega}$ is denoted by $\omega^{(j)}$. The constraint \eqref{eq:6B} ensures that only the phase of the signal is altered by the IRS elements without affecting the magnitude. The constraint \eqref{eq:6D} ensures that the transmit power at each user is bounded by maximum and minimum feasible power thresholds $P_{\text{max}}$ and $P_{\text{min}}$ respectively. 
+
+The optimization problem (\ref{eq:6}) is non-convex due to non-concave objective function \eqref{eq:6A} and non-convex constraint \eqref{eq:6B}. There is no standard technique to solve this problem optimally. We transform the problem into a tractable form and employ an alternating optimization (AO) algorithm.
+
+\subsection{Problem Transformation}
+
+\textbf{Temporary notes}
 
 \begin{itemize}
+
+\item Describe what each of these constraints mean physically
+\item Give sub-indexing to constraints
+\item The objective function is non-concave
+\item mention what constraints are non-concave
+\item No standard way to optimally solve
+\item As a solution you need to transform the problem
+\item Mention that an AO(Alternating Optimization) algorithm is proposed.
+\item Some papers give descriptive explanations of AO algorithms.
+
+
+\end{itemize}
+
+\textbf{Temporary notes old}
+
+\begin{itemize}
+
 
 \item Introduce channels, IRS phase matrix
 \item Talk about information symbol
@@ -95,40 +219,28 @@ The effective channel from the user $j \in \mathcal{J}$ to user $k \in \mathcal{
 
 \item Mention the received channel at a arbitrary user and the eavesdropper.
 
-\item Assumption 1: Two-way communications Self Interference and Residual Loop Interference can be suppressed completely.
+\item Assumption 1: Two-way communications: Self Interference and Loop Interference can be suppressed completely. Residual loop interference is left.
 
-\item Assumption 2: Full signal reflection at each signal reflection.
+\item Assumption 2: Full signal reflection at each signal reflection. For the ease of practical implementation and maximizing reflected power.
 
-\item Assumption 3: How the IRS Tx Rx are connected. Where is the CPU.
+\item Assumption 3: How the IRS Tx Rx are connected. Where is the CPU.: CPU is connected to all the users as well as the IRS using a different allocated bandwidth for sharing the overhead.
 
-\item Assumption 3: Talking about the CSI.
+\item Assumption 4: Talking about the CSI: Availability of full CSI to all the users including the CSI of the eavesdropper in the CPU. Use of channel reciprocity for CSI acquisition.
 
 \item Mention the received channel at a arbitrary user and the eavesdropper.
-\item Introduce the secrecy rate.
+
+
+\item Introduce the secrecy rate; Introduce the transmission rates; next introduce the secrecy rate formula using transmission rates;
+
+
+
+
 \item Finally go for a problem formulation.
 
 \end{itemize}
 
-\begin{equation}
-\label{eqn1}
-\begin{split}
- & y_{Ap} = \sqrt{P_{Bp}} \boldsymbol{\omega^\dag} \mathbf{H}_{p}s_{Bp} + \\&  \sum_{r\in\mathcal{P}\backslash\{p\}} \left(\sqrt{P_{Ar}} \boldsymbol{\omega^\dag} \mathbf{H}_{p,r}^{AA}s_{Ar} + \sqrt{P_{Br}} \boldsymbol{\omega^\dag} \mathbf{H}_{p,r}^{AB}s_{Br}\right) + \\& n_{Ap} + l_{Ap}
-\end{split}
-\end{equation}
 
 
-
-
-\begin{figure}[!h]
-\centering
-\includegraphics[width=2in]{images/multipair}
-\caption{IRS-Assisted secure multi-pair communication model}
-\label{fig_1}
-\end{figure}
-
-\subsection{Problem Formulation}
-
-Formulate the initial problem
 
 \section{Minimum Secrecy Rate Maximization}
 
@@ -176,7 +288,7 @@ Itam, que ipiti sum dem velit la sum et dionet quatibus apitet voloritet audam, 
 Fugit odi ut pliquia incitium latum que cusapere perit molupta eaquaeria quod ut optatem poreiur? Quiaerr ovitior suntiant litio bearciur?
 
 Onseque sequaes rectur autate minullore nusae nestiberum, sum voluptatio. Et ratem sequiam quaspername nos rem repudandae volum consequis nos eium aut as molupta tectum ulparumquam ut maximillesti consequas quas inctia cum volectinusa porrum unt eius cusaest exeritatur? Nias es enist fugit pa vollum reium essusam nist et pa aceaqui quo elibusdandis deligendus que nullaci lloreri bla que sa coreriam explacc atiumquos simolorpore, non prehendunt lam que occum\cite{doppler2009device} si aut aut maximus eliaeruntia dia sequiamenime natem sendae ipidemp orehend uciisi omnienetus most verum, ommolendi omnimus, est, veni aut ipsa volendelist mo conserum volores estisciis recessi nveles ut poressitatur sitiis ex endi diti volum dolupta aut aut odi as eatquo cullabo remquis toreptum et des accus dolende pores sequas dolores tinust quas expel moditae ne sum quiatis nis endipie nihilis etum fugiae audi dia quiasit quibus.
-\IEEEpubidadjcol
+
 Ibus el et quatemo luptatque doluptaest et pe volent rem ipidusa eribus utem venimolorae dera qui acea quam etur aceruptat.
 Gias anis doluptaspic tem et aliquis alique inctiuntiur?
 
