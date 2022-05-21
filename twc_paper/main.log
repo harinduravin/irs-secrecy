@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.4.5)  1 MAY 2022 19:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.4.5)  15 MAY 2022 19:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -329,27 +329,23 @@ File: l3backend-pdftex.def 2022-02-07 L3 backend support: PDF output (pdfTeX)
 LaTeX Warning: Unused global option(s):
     [lettersize].
 
-(./main.aux
-
-LaTeX Warning: Label `fig_1' multiply defined.
-
-)
+(./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
 
 -- Lines per column: 58 (exact).
 Package caption Info: Begin \AtBeginDocument code.
@@ -412,203 +408,200 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Trying to load font information for U+msa on input line 43.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 44.
 
  (/usr/local/texlive/2022basic/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 43.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 44.
 
 
 (/usr/local/texlive/2022basic/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<images/multipair.png, id=1, 352.31625pt x 452.69125pt>
-File: images/multipair.png Graphic file (type png)
-<use images/multipair.png>
-Package pdftex.def Info: images/multipair.png  used on input line 124.
-(pdftex.def)             Requested size: 144.54pt x 185.71513pt.
+<images/test.png, id=1, 566.115pt x 300.12125pt>
+File: images/test.png Graphic file (type png)
+<use images/test.png>
+Package pdftex.def Info: images/test.png  used on input line 96.
+(pdftex.def)             Requested size: 180.67499pt x 95.77972pt.
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 1
-38.
+20.
 
 (/usr/local/texlive/2022basic/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) [1{/usr/local/texlive/2022basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
- <./images/multipair.png>]
+ <./images/test.png>] [2]
 
-LaTeX Warning: Citation `ref1' on page 2 undefined on input line 170.
-
-
-LaTeX Warning: Citation `ref2' on page 2 undefined on input line 170.
+LaTeX Warning: Citation `ref1' on page 3 undefined on input line 282.
 
 
-LaTeX Warning: Citation `ref3' on page 2 undefined on input line 170.
+LaTeX Warning: Citation `ref2' on page 3 undefined on input line 282.
 
 
-LaTeX Warning: Citation `ref4' on page 2 undefined on input line 170.
+LaTeX Warning: Citation `ref3' on page 3 undefined on input line 282.
 
 
-LaTeX Warning: Citation `ref5' on page 2 undefined on input line 170.
+LaTeX Warning: Citation `ref4' on page 3 undefined on input line 282.
 
-[2]
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 2
-00.
+
+LaTeX Warning: Citation `ref5' on page 3 undefined on input line 282.
+
+[3]
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 3
+12.
  (/usr/local/texlive/2022basic/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-LaTeX Font Info:    Trying to load font information for OMS+pcr on input line 2
-03.
+LaTeX Font Info:    Trying to load font information for OMS+pcr on input line 3
+15.
 
 (/usr/local/texlive/2022basic/texmf-dist/tex/latex/psnfss/omspcr.fd
 File: omspcr.fd 
 )
 LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 203.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 315.
 
 
-LaTeX Warning: Citation `ref1' on page 3 undefined on input line 204.
+LaTeX Warning: Citation `ref1' on page 4 undefined on input line 316.
 
 
-LaTeX Warning: Citation `ref2' on page 3 undefined on input line 204.
+LaTeX Warning: Citation `ref2' on page 4 undefined on input line 316.
 
 
-LaTeX Warning: Citation `ref3' on page 3 undefined on input line 204.
+LaTeX Warning: Citation `ref3' on page 4 undefined on input line 316.
 
 
-LaTeX Warning: Citation `ref9' on page 3 undefined on input line 204.
+LaTeX Warning: Citation `ref9' on page 4 undefined on input line 316.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 203--205
+Underfull \hbox (badness 10000) in paragraph at lines 315--317
 []\OT1/ptm/m/n/10 For mul-ti-ple ci-ta-tions code as fol-lows:
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 203--205
+Underfull \hbox (badness 10000) in paragraph at lines 315--317
 \OMS/cmsy/m/n/10 n$\OT1/pcr/m/n/10 cite\OMS/cmsy/m/n/10 f\OT1/pcr/m/n/10 ref1,r
 ef2,ref3\OMS/cmsy/m/n/10 g \OT1/ptm/m/n/10 which will pro-duce [2].
  []
 
 
-Underfull \hbox (badness 2065) in paragraph at lines 203--205
+Underfull \hbox (badness 2065) in paragraph at lines 315--317
 \OT1/ptm/m/n/10 For ref-er-ence ranges that are not con-sec-u-tive code as
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 207--208
+Underfull \hbox (badness 10000) in paragraph at lines 319--320
 
  []
 
-<fig1.png, id=29, 188.20313pt x 173.89969pt>
+<fig1.png, id=35, 188.20313pt x 173.89969pt>
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 247.
+Package pdftex.def Info: fig1.png  used on input line 359.
 (pdftex.def)             Requested size: 180.67499pt x 166.95505pt.
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 262.
+Package pdftex.def Info: fig1.png  used on input line 374.
 (pdftex.def)             Requested size: 180.67499pt x 166.95505pt.
-LaTeX Font Info:    Trying to load font information for OT1+phv on input line 2
-62.
+LaTeX Font Info:    Trying to load font information for OT1+phv on input line 3
+74.
 (/usr/local/texlive/2022basic/texmf-dist/tex/latex/psnfss/ot1phv.fd
 File: ot1phv.fd 2020/03/25 scalable font definitions for OT1/phv.
 )
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 265.
+Package pdftex.def Info: fig1.png  used on input line 377.
 (pdftex.def)             Requested size: 180.67499pt x 166.95505pt.
- [3 <./fig1.png>]
+ [4 <./fig1.png>]
 
-LaTeX Warning: Citation `ref1' on page 4 undefined on input line 325.
-
-
-LaTeX Warning: Citation `ref2' on page 4 undefined on input line 325.
+LaTeX Warning: Citation `ref1' on page 5 undefined on input line 437.
 
 
-LaTeX Warning: Citation `ref3' on page 4 undefined on input line 325.
+LaTeX Warning: Citation `ref2' on page 5 undefined on input line 437.
 
 
-LaTeX Warning: Citation `ref4' on page 4 undefined on input line 325.
+LaTeX Warning: Citation `ref3' on page 5 undefined on input line 437.
 
 
-LaTeX Warning: Citation `ref5' on page 4 undefined on input line 325.
+LaTeX Warning: Citation `ref4' on page 5 undefined on input line 437.
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--328
+LaTeX Warning: Citation `ref5' on page 5 undefined on input line 437.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 439--440
 []\OT1/ptm/m/n/10 Further ex-am-ples can be found at $http : / / journals .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--328
+Underfull \hbox (badness 10000) in paragraph at lines 439--440
 \OT1/ptm/m/n/10 ieeeauthorcenter . ieee . org / wp-[]content / uploads / sites 
 / 7 /
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 354--356
+Underfull \hbox (badness 10000) in paragraph at lines 466--468
 
  []
 
-[4] [5] [6]
-Underfull \hbox (badness 4832) in paragraph at lines 649--654
+[5] [6] [7]
+Underfull \hbox (badness 4832) in paragraph at lines 761--766
 []\OT1/ptm/m/n/10 You can use a bib-li-og-ra-phy gen-er-ated by Bib-TeX
  []
 
 
-Underfull \hbox (badness 4608) in paragraph at lines 649--654
+Underfull \hbox (badness 4608) in paragraph at lines 761--766
 \OT1/ptm/m/n/10 as a .bbl file. Bib-TeX doc-u-men-ta-tion can be eas-ily
  []
 
 
-Underfull \hbox (badness 6380) in paragraph at lines 649--654
+Underfull \hbox (badness 6380) in paragraph at lines 761--766
 \OT1/ptm/m/n/10 ob-tained at: http://mirror.ctan.org/biblio/bibtex/contrib/doc/
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 649--654
+Underfull \hbox (badness 10000) in paragraph at lines 761--766
 \OT1/ptm/m/n/10 The IEEE-tran Bib-TeX style sup-port page is:
  []
 
 (./main.bbl)
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 679.
+Package pdftex.def Info: fig1.png  used on input line 791.
 (pdftex.def)             Requested size: 72.27031pt x 66.77777pt.
 File: fig1.png Graphic file (type png)
 <use fig1.png>
-Package pdftex.def Info: fig1.png  used on input line 679.
+Package pdftex.def Info: fig1.png  used on input line 791.
 (pdftex.def)             Requested size: 72.27031pt x 66.77777pt.
 LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 680.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 792.
 
-Underfull \hbox (badness 10000) in paragraph at lines 679--682
+Underfull \hbox (badness 10000) in paragraph at lines 791--794
 \OT1/ptm/m/n/8 and then for the 1st ar-gu-ment use
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 679--682
+Underfull \hbox (badness 10000) in paragraph at lines 791--794
 \OMS/cmsy/m/n/8 n$\OT1/pcr/m/n/8 includegraphics \OT1/ptm/m/n/8 to de-clare and
  link
  []
 
-[7] (./main.aux)
+[8] (./main.aux)
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: There were multiply-defined labels.
-
  ) 
 Here is how much of TeX's memory you used:
- 6094 strings out of 479719
- 104569 string characters out of 5880575
- 400495 words of memory out of 5000000
- 23951 multiletter control sequences out of 15000+600000
+ 6104 strings out of 479719
+ 104594 string characters out of 5880575
+ 405544 words of memory out of 5000000
+ 23961 multiletter control sequences out of 15000+600000
  527691 words of font info for 139 fonts, out of 8000000 for 9000
  323 hyphenation exceptions out of 8191
- 60i,20n,67p,955b,504s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 60i,27n,67p,955b,508s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/usr/local/texlive/2022basic/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/lo
 cal/texlive/2022basic/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmbsy7.pfb
 ></usr/local/texlive/2022basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10
@@ -619,23 +612,25 @@ s/cm/cmmi10.pfb></usr/local/texlive/2022basic/texmf-dist/fonts/type1/public/ams
 fonts/cm/cmmi5.pfb></usr/local/texlive/2022basic/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmmi7.pfb></usr/local/texlive/2022basic/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmmib10.pfb></usr/local/texlive/2022basic/texmf-dist/fonts/type1
-/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2022basic/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2022basic/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2022basic/texmf-dist/font
-s/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2022basic/texmf-dist/
-fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2022basic/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2022basic/texmf
--dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2022ba
-sic/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2022basic
-/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2022basic/t
-exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2022basic/texmf-
-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2022basic/texmf-dist
-/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2022basic/texmf-dist/font
-s/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (7 pages, 300626 bytes).
+/public/amsfonts/cmextra/cmmib7.pfb></usr/local/texlive/2022basic/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2022basic/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texlive/2022basic/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2022basic/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2022basic/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2022basic
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2022ba
+sic/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texli
+ve/2022basic/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/lo
+cal/texlive/2022basic/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local
+/texlive/2022basic/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/t
+exlive/2022basic/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texliv
+e/2022basic/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/20
+22basic/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2022bas
+ic/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (8 pages, 341475 bytes).
 PDF statistics:
- 141 PDF objects out of 1000 (max. 8388607)
- 84 compressed objects within 1 object stream
+ 154 PDF objects out of 1000 (max. 8388607)
+ 92 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  23 words of extra memory for PDF output out of 10000 (max. 10000000)
 
