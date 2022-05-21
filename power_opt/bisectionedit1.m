@@ -74,7 +74,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 
-num_seeds = 5 - 1;
+num_seeds = 10 - 1;
 f = waitbar(0,'Please wait...');
 
 
@@ -94,6 +94,7 @@ for seed = 0:num_seeds
         w = [wi ; 1].';
 
         global W; % Check this again
+        % W = remove_small(w'*w);
         W = w'*w;
 
         % Generating all the channels before algorithm loop starts
@@ -109,103 +110,171 @@ for seed = 0:num_seeds
         eves_stack = eves_inf_all();
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        outer_iter = 20;
+        outer_iter = 4;
+
+        upper_t = 100;
+        lower_t = -10;
+        t = upper_t;
+
+        upper_z = 10;
+        lower_z = -10;
+        z = upper_z;
 
         for j = 1:outer_iter
+
+            % Reflection phase optimization
+            % Successive Convex Approximation (SCA)
+            %
+
+            for m = 1:10
+            % for t = lower_t:4:upper_t
+
+                try
+                    cvx_begin quiet
+                    % cvx_precision high
+                    cvx_solver Mosek
+                    variable X(L+1,L+1) complex semidefinite %symmetric
+    
+                    minimize 0
+    
+                    subject to
+
+                        for u = 1:length(user_list)
+    
+                            % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
+                            -log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
+                        end
+    
+                        diag(X) == 1;
+                        % norm((X-W),1)<=2*exp(-outer_iter/2);
+                        norm((X-W),1)<=2;
+                    cvx_end
+
+                    cvx_status;
+    
+                catch
+                    fprintf('skipped')
+%                     cvx_status
+                    seed;
+                    seed_flag = 1;
+                    break;
+                end
+
+                if string(cvx_status) == string('Infeasible')
+                    lower_t = t;
+
+                elseif string(cvx_status) == string('Failed')
+                    break;
+                    seed_flag = 1;
+                    fprintf('Failed')
+                else
+                    upper_t = t;
+                    W = X;
+                end
+
+                t = (lower_t + upper_t)/2;
+
+                if (upper_t - lower_t) < 0.4
+                    t;
+                    break;
+                end
+
+
+            end
+
+            if seed_flag == 1
+                break;
+            end
+
+
             %
             % Power optimization - Successive convex approximation
             %
             power_string = num2str(dec2bin(0,2*n));
             P_hat = (get_power_values(power_string,max_power,min_power))';
 
-            cvx_begin quiet
-            cvx_solver Mosek
-            variable P(2*n,1)
-            variable z
+            for l = 1:10
 
-            minimize z
+                try
 
-            subject to
 
-                for u = 1:length(user_list)
 
-                    % for n = 2
-                    -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
-                    -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
-                    -get_S(user_list(u),P_hat)...
-                    -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+                    cvx_begin quiet
+                    cvx_solver Mosek
+                    variable P(2*n,1)
+                    % variable z
 
-                    % for n = 3
-                    % -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
-                    % -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
-                    % -get_S(user_list(u),P_hat)...
-                    % - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+                    minimize 0
 
+                    subject to
+
+                        for u = 1:length(user_list)
+
+                            % for n = 2
+                            -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
+                            -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
+                            -get_S(user_list(u),P_hat)...
+                            -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+
+                            % for n = 3
+                            % -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
+                            % -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
+                            % -get_S(user_list(u),P_hat)...
+                            % - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+
+                        end
+
+                        for i = 1:length(user_list)
+
+                            P(i) <= dbm2watt(max_power); 
+                            P(i) >= dbm2watt(min_power);
+
+                        end
+                        norm((P-P_hat),1)<=1;
+                    cvx_end
+
+                    cvx_status;
+
+                catch
+                    fprintf("skipped1")
+                    cvx_status
+                    seed;
+                    seed_flag = 1;
+                    break;
                 end
 
-                for i = 1:length(user_list)
-
-                    P(i) <= dbm2watt(max_power); 
-                    P(i) >= dbm2watt(min_power);
-
+                if string(cvx_status) == string('Infeasible')
+                    lower_z = z;
+                elseif string(cvx_status) == string('Failed')
+                    break;
+                    fprintf('Failed')
+                else
+                    upper_z = z;
+                    P_hat = P;
                 end
-                norm((P-P_hat),1)<=1;
-            cvx_end
 
-            P_hat = P;
+                z = (lower_z + upper_z)/2;
 
-            % Reflection phase optimization
-            % Successive Convex Approximation (SCA)
-            %
-            try
-                cvx_begin quiet
-                % cvx_precision high
-                cvx_solver Mosek
-                variable X(L+1,L+1) complex semidefinite %symmetric
-                variable t
+                if (upper_z - lower_z) < 0.1
 
-                minimize t
+                    z;
+                    break;
+                end
 
-                subject to
-
-                    for u = 1:length(user_list)
-
-                        % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                        -log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
-                    end
-
-                    diag(X) == 1;
-                    % norm((X-W),1)<=2*exp(-outer_iter/2);
-                    norm((X-W),1)<=2;
-                cvx_end
-            catch
-
-                fprintf("Error occured")
-                cvx_status
-                seed
-                seed_flag = 1;
-                break;
             end
-
-            if cvx_status == 'Failed'
-                cvx_status
-                seed
-                L
-                continue;
-            else
-                W = X;
-            end
-
             if seed_flag == 1
                 break;
             end
-            [min_value, rate_list] = get_min_rate(P_hat);
+
         end % end of outer iteration
-        if seed_flag == 1
-            break;
+        if seed_flag == 0
+            [min_value, rate_list] = get_min_rate(P_hat);
+        elseif seed_flag == 1
+            min_value = nan;
+            seed_flag = 0;
         end
 
-        [min_value, rate_list] = get_min_rate(P_hat);
+
         min_list = [min_list, min_value];
 
     end % end of L iteration
@@ -215,7 +284,7 @@ end % end of random seed iteration
 close(f)
 
 figure(1)
-plot(L_list,mean(min_master_list));
+plot(L_list,mean(min_master_list,'omitnan'));
 ylim([0 4])
 xlabel('Number of elements')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')

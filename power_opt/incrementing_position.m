@@ -3,52 +3,21 @@
 global n;
 n = 2;
 
-% Position of all the nodes
-% n = 5
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% 16.44 -6.14;20.99 -2.66;23.06 18.20;
-% 21.79 12.58;-0.83 18.29;2.15 13.24;
-% ];
-
-% Mixed up
-% coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
-% -13.01 -13.73;7.04 -7.78;-18.36 12.34;
-% 20.76 14.56;6.71 3.45;22.99 -7.56;
-% -20.08 -0.13;5.20 15.50;15.38 -18.26;
-% ];
-
-% n = 2
-coords = [-18.57 15.12;-24.98 4.75;19.11 15.59;
-24.61 4.87;0.06 16.51;0.16 -16.13;
+coords1 = [-19.04 15.12;-25.54 5.74;18.57 15.61;
+25.07 7.37;0.16 15.74;0.16 -16.20;
 ];
 
-% Mixed up
-% coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
-% -13.01 -13.73;5.20 15.50;15.38 -38.26
-% ];
+coords2 = [-19.25 14.98;19.37 -2.25;19.43 15.10;
+-20.06 -1.55;0.21 15.53;0.29 -16.05;
+];
 
-% symmetric 1
-% coords = [-24 -4;-16 -12;24 -4;
-% 16 -12;0 18;0 8;
-% ];
 
-% n = 3
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% -0.83 18.29;2.15 13.24;];
-
-% n = 4
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% 16.44 -6.14;20.99 -2.66;-0.83 18.29;2.15 13.24;
-% ];
 
 % Preparing the Euclidean distance matrix
 global dist;
-dist = sqDistance(coords, coords);
+% dist = sqDistance(coords, coords);
 
-L_list = 5:5:25;
+pos_list = 0:6;
 
 % Residual interference and noise values
 sigma_c = 10^(-14.5);
@@ -74,7 +43,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 
-num_seeds = 5 - 1;
+num_seeds = 30 - 1;
 f = waitbar(0,'Please wait...');
 
 
@@ -87,7 +56,11 @@ for seed = 0:num_seeds
 
     % Number of elements in the IRS
     global L;
-    for L = 5:5:25
+    L = 10;
+    for pos_iter = 0:6
+
+        coords = coords1 + (coords2 - coords1)*pos_iter/12;
+        dist = sqDistance(coords, coords);
 
         % IRS reflection matrix (Initialized randomly)
         wi = exp(1i*(2*rand(L,1)-1)*pi);
@@ -118,6 +91,14 @@ for seed = 0:num_seeds
             power_string = num2str(dec2bin(0,2*n));
             P_hat = (get_power_values(power_string,max_power,min_power))';
 
+            % Remove comment when removing power optimization (Fixed average power)
+            % power_string_high = num2str(dec2bin(2^(2*n)-1,2*n));
+            % P_hat_high = (get_power_values(power_string_high,max_power,min_power))';
+            % P_hat = P_hat_high;
+
+            %%%%%%%%%%%%%%%%%%%%%%%%%
+
+
             cvx_begin quiet
             cvx_solver Mosek
             variable P(2*n,1)
@@ -136,10 +117,10 @@ for seed = 0:num_seeds
                     -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
 
                     % for n = 3
-                    % -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
-                    % -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
-                    % -get_S(user_list(u),P_hat)...
-                    % - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+%                     -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
+%                     -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
+%                     -get_S(user_list(u),P_hat)...
+%                     - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
 
                 end
 
@@ -154,9 +135,12 @@ for seed = 0:num_seeds
 
             P_hat = P;
 
+            %%%%%%%%%%%%%%%%%%%%%%
+
             % Reflection phase optimization
             % Successive Convex Approximation (SCA)
             %
+
             try
                 cvx_begin quiet
                 % cvx_precision high
@@ -215,8 +199,9 @@ end % end of random seed iteration
 close(f)
 
 figure(1)
-plot(L_list,mean(min_master_list));
+plot(pos_list,mean(min_master_list));
 ylim([0 4])
+xlim([0 6])
 xlabel('Number of elements')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
