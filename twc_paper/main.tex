@@ -52,6 +52,14 @@ Article submission, IEEE, IEEEtran, journal, \LaTeX, paper, template, typesettin
 
 Intelligent reflecting surface (IRS)
 
+%State the background -> state recent development -> Directly address the issue 
+%
+%then establish ; Your investigation is important to resolve the issue and improve technology
+%
+%Avoid criticism of previous work. don't use very old or many old reference.
+%
+%Fair , fatless and fascinating
+
 %\begin{itemize}
 %\item Start general on IRSs
 %\item Talk about physical layer security
@@ -105,12 +113,12 @@ Let $\boldsymbol{\omega}_{ind}^\dag = [e^{j\phi_{1}},...,e^{j\phi_{L}}]$ denote 
 
 The effective channel from the user $A_j$ to user $B_k$ due to direct path and cascaded user-IRS-user channel can be expressed as $\boldsymbol{\omega}^\dag \mathbf{H}_{A_j,B_k}$, where $\boldsymbol{\omega}^\dag = [ \boldsymbol{\omega}_{ind}^\dag \;\; 1 ]$ and $\mathbf{H}_{A_j,B_k}^T =  [\boldsymbol{f}_j^{T} diag(\boldsymbol{g}_k) \; h_{jk}] \in \mathbb{C}^{1\times (L+1)}$. Similarly, the effective channel from the user $A_j$ to eavesdropper $E$ can be expressed as $\boldsymbol{\omega}^\dag \mathbf{H}_{A_j,E}$, where $\mathbf{H}_{A_j,E}^T =  [\boldsymbol{f}_j^{T} diag(\boldsymbol{q}) \; f_{je}] \in \mathbb{C}^{1\times (L+1)}$. The information symbol and power transmitted by the user $A_j$ can be denoted as $s_{A_j} \in \mathcal{CN}(0,1)$ and $P_{A_j}$ respectively. Let $\mathbf{P} = [P_{A_1}, P_{B_1}, ..., P_{A_N}, P_{B_N}]$ denote all the transmit powers of legitimate users.
 
-Without loss of generality, the received signal at user $A_j$ can be expressed as
+Without loss of generality, the received signal at the arbitrary user $A_j$ from group A can be expressed as
 
 \begin{equation}
 \label{eqn1}
 \begin{split}
- y_{A_j} & = \underbrace{\sqrt{P_{A_j}} \boldsymbol{\omega^\dag} \mathbf{H}_{A_j,A_j}s_{A_j}}_{\text{Self interference}} + \underbrace{\sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{A_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{A_i,A_j}s_{A_i}}_{\text{Inter-pair interference}}  \\& +  \underbrace{\sqrt{P_{B_j}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_j,A_j}s_{B_j}}_{\text{Desired signal}} + \underbrace{\sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{B_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_i,A_j}s_{B_i}}_{\text{Inter-pair interference}}  \\& + \underbrace{n_{A_j} + l_{A_j}}_{\text{Noise and loop interference}} ,
+ y_{A_j} & = \underbrace{\sqrt{P_{A_j}} \boldsymbol{\omega}^\dag \mathbf{H}_{A_j,A_j}s_{A_j}}_{\text{Self interference}} + \underbrace{\sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{A_i}} \boldsymbol{\omega}^\dag \mathbf{H}_{A_i,A_j}s_{A_i}}_{\text{Inter-pair interference}}  \\& +  \underbrace{\sqrt{P_{B_j}} \boldsymbol{\omega}^\dag \mathbf{H}_{B_j,A_j}s_{B_j}}_{\text{Desired signal}} + \underbrace{\sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{B_i}} \boldsymbol{\omega}^\dag \mathbf{H}_{B_i,A_j}s_{B_i}}_{\text{Inter-pair interference}}  \\& + \underbrace{n_{A_j} + l_{A_j}}_{\text{Noise and loop interference}} ,
 \end{split}
 \end{equation}
 
@@ -137,7 +145,7 @@ R_{A_j}^{B_j} = log_2 \left(1+ \frac{P_{B_j}|\boldsymbol{\omega}^\dag \mathbf{H}
 \end{equation}
 \begin{equation}
 \label{eqn_dbl_y}
-R_{A_j}^E = log_2 \left(1+ \frac{P_{B_j}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_j,E}|^2}{\sum_{i=1}^N {P_{A_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{A_i,E}|^2} + \sum_{\substack{i=1 \\ i\neq j}}^N {P_{B_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_i,E}|^2} + \sigma^2}\right)
+R_{E}^{B_j} = log_2 \left(1+ \frac{P_{B_j}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_j,E}|^2}{\sum_{i=1}^N {P_{A_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{A_i,E}|^2} + \sum_{\substack{i=1 \\ i\neq j}}^N {P_{B_i}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_i,E}|^2} + \sigma^2}\right)
 \end{equation}
 % Restore the current equation number. \setcounter{equation}{\value{mytempeqncnt}}
 % IEEE uses as a separator
@@ -151,7 +159,7 @@ R_{A_j}^E = log_2 \left(1+ \frac{P_{B_j}|\boldsymbol{\omega}^\dag \mathbf{H}_{B_
 \begin{equation}
 \label{eqn2}
 \begin{split}
- y_{E} & = \underbrace{\sum_{i=1}^{N} \sqrt{P_{A_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{A_i,E}s_{A_i} + \sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{B_i}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_i,E}s_{B_i}}_{\text{Interference}} \\&+ \underbrace{\sqrt{P_{B_j}} \boldsymbol{\omega^\dag} \mathbf{H}_{B_j,E}s_{B_j}}_{\text{Signal of interest}} + \underbrace{n_{E}}_{\text{Noise}} ,
+ y_{E} & = \underbrace{\sum_{i=1}^{N} \sqrt{P_{A_i}} \boldsymbol{\omega}^\dag \mathbf{H}_{A_i,E}s_{A_i} + \sum_{\substack{i=1 \\ i\neq j}}^{N} \sqrt{P_{B_i}} \boldsymbol{\omega}^\dag \mathbf{H}_{B_i,E}s_{B_i}}_{\text{Interference}} \\&+ \underbrace{\sqrt{P_{B_j}} \boldsymbol{\omega}^\dag \mathbf{H}_{B_j,E}s_{B_j}}_{\text{Signal of interest}} + \underbrace{n_{E}}_{\text{Noise}} ,
 \end{split}
 \end{equation}
 
@@ -161,9 +169,11 @@ According to \eqref{eqn1}, the achievable transmission rate confidential message
 
 \begin{equation}
 \label{eqn3}
-C_{A_j} = \left[R_{A_j}^{B_j} - R_{A_j}^E \right]^{+}.
+C_{A_j} = \left[R_{A_j}^{B_j} - R_{E}^{B_j} \right]^{+}.
 \end{equation}
 
+A similar expression can be obtained for an arbitrary user 
+$B_j$ from group B.
 
 
 \subsection{Problem Formulation}
@@ -182,11 +192,98 @@ In this paper we maximize the minimum secrecy-rate among all the legitimate user
 
 The $j$-th element of the vector $\boldsymbol{\omega}$ is denoted by $\omega^{(j)}$. The constraint \eqref{eq:6B} ensures that only the phase of the signal is altered by the IRS elements without affecting the magnitude. The constraint \eqref{eq:6D} ensures that the transmit power at each user is bounded by maximum and minimum feasible power thresholds $P_{\text{max}}$ and $P_{\text{min}}$ respectively. 
 
-The optimization problem (\ref{eq:6}) is non-convex due to non-concave objective function \eqref{eq:6A} and non-convex constraint \eqref{eq:6B}. There is no standard technique to solve this problem optimally. We transform the problem into a tractable form and employ an alternating optimization (AO) algorithm.
+The optimization problem (\ref{eq:6}) is non-convex due to non-concave objective function \eqref{eq:6A} and non-convex constraint \eqref{eq:6B}. The optimization variables $\mathbf{P}$ and $\boldsymbol{\omega}$ are coupled in the objective function, which makes the problem non-convex in both variables at once. There is no standard technique to solve this problem optimally. We proceed with an iterative algorithm to solve this problem efficiently.
 
-\subsection{Problem Transformation}
+\section{Minimum Secrecy Rate Maximization}
 
-\textbf{Temporary notes}
+In this section, we transform the problem (P1) into a tractable form and employ alternating optimization (AO) technique.
+
+\subsection{Problem transformation}
+
+Similar to the work in \cite{atapattu2020}, problem (P1) can be converted to its equivalent epigraph problem (P2) by introducing an auxiliary variable $t$. In order to relax the non-convex constraint \eqref{eq:6C} we obtain $\tilde{\boldsymbol{\omega}}$ from $\boldsymbol{\omega}$ by multiplying each element with complex number $\nu$ satisfying $|\nu| = 1$.
+
+\begin{equation}
+\label{eqn4}
+\tilde{\boldsymbol{\omega}} = \nu \boldsymbol{\omega} = \begin{bmatrix} \nu \boldsymbol{\omega}_{ind} \\ \nu  \end{bmatrix}
+\end{equation}
+
+Problem (P1) is then converted to a semi-definite relaxation (SDR) problem by the employing the substitution $|\boldsymbol{\omega}^\dag \mathbf{H}_{X,Y}|^2 = \text{Tr}(\mathbf{\tilde{H}}_{X,Y} \boldsymbol{W})$, $X,Y \in \mathcal{U}$, where $\mathbf{\tilde{H}}_{X,Y} = \mathbf{H}_{X,Y} \mathbf{H}_{X,Y}^\dag$ and  $\boldsymbol{W} = \tilde{\boldsymbol{\omega}} \tilde{\boldsymbol{\omega}}^\dag$. Similar to \eqref{eqn3}, which can be updated by substituting \eqref{eqn_dbl_x} and \eqref{eqn_dbl_y}, all the constraints \eqref{eq:8B} in the transformed optimization problem (P2) can be updated.
+
+\begin{subequations}\label{eq:8}
+\begin{align}
+\text{(P2):} \quad \mathop{\max_{\boldsymbol{W},\mathbf{P}}}  & \quad  t \label{eq:8A}\\
+\textrm{s.t.} \quad & C_{X} \geq t & \quad & \forall X\in\mathcal{U},\label{eq:8B}\\
+&\text{diag}(\boldsymbol{W}) = 1 \label{eq:8C}\\
+  &\boldsymbol{W} \succeq 0 ,   \label{eq:8D}\\&\text{Rank}(\boldsymbol{W}) = 1 ,   \label{eq:8D}\\ & P_{\text{min}} \leq P_{X} \leq P_{\text{max}} & \quad & \forall X\in\mathcal{U}. \label{eq:8E}
+\end{align}
+\end{subequations}
+
+Mention the Rank-1 issue as well. We relax the non-convex Rank-1 constraint for solving the problem. It is not guaranteed that the final solution will necessarily be Rank-1.
+
+Write down the long form of difference of two convex functions of P and W.
+
+Still the problem is non-convex due to coupled optimization variables and the non-convex nature of the constraints \eqref{eq:8B}. We use Taylor approximation to convert each constraint into a convex lower bound. Then alternative optimization (AO) technique is used to optimize power variable $P$ and IRS phases $W$ in an alternating manner.
+
+%%%%%%%%%%
+
+\begin{figure*}[!t]
+
+\normalsize
+
+\begin{equation}
+\label{eqn_2_x}
+P_{A_j} = log_2 \left(\sum_{\substack{i=1 \\ i\neq j}}^N  P_{A_i} \text{Tr}(\mathbf{H}_{A_i,A_j} \boldsymbol{W}) + \sum_{i=1}^N P_{B_i}\text{Tr}(\mathbf{H}_{B_i,A_j}\boldsymbol{W})  + \sigma^2 + \sigma_{l}^2\right) + log_2 \left(\sum_{i=1}^N  P_{A_i} \text{Tr}(\mathbf{H}_{A_i,E} \boldsymbol{W}) + \sum_{\substack{i=1 \\ i\neq j}}^N P_{B_i}\text{Tr}(\mathbf{H}_{B_i,E}\boldsymbol{W})  + \sigma^2\right)
+\end{equation}
+
+\begin{equation}
+\label{eqn_2_y}
+Q_{A_j} = log_2 \left(\sum_{\substack{i=1 \\ i\neq j}}^N  \left[P_{A_i} \text{Tr}(\mathbf{H}_{A_i,A_j} \boldsymbol{W}) +  P_{B_i}\text{Tr}(\mathbf{H}_{B_i,A_j}\boldsymbol{W})\right]  + \sigma^2 + \sigma_{l}^2\right) + log_2 \left(\sum_{i=1}^N  P_{A_i} \text{Tr}(\mathbf{H}_{A_i,E} \boldsymbol{W}) + \sum_{\substack{i=1 \\ i\neq j}}^N P_{B_i}\text{Tr}(\mathbf{H}_{B_i,E}\boldsymbol{W})  + \sigma^2\right)
+\end{equation}
+
+\hrulefill
+\end{figure*}
+
+%%%%%%%%%%
+
+
+
+\subsection{Transmit power optimization}
+
+test
+
+\subsection{IRS phase optimization}
+
+test
+
+
+\textbf{Temporary notes - Problem Solving}
+
+\begin{itemize}
+
+\item Introduction of auxiliary variable t
+\item Preparation of reflection matrix for SDP (Semi-definite programming) (Mention the other papers)
+\item P and W are coupled in a way that makes the problem non-convex
+\item Introduce what we do by employing alternating optimization (AO)
+\item Introduce Taylor approximation
+\item Introduce successive convex approximation
+\item Introduce Gaussian randomization
+\item Introduce suitable substitutions
+\item Make sure the steps are not too long or not too short
+
+
+\end{itemize}
+
+\textbf{Temporary notes - Related works}
+
+\begin{itemize}
+
+\item Mention papers that use bisection based techniques for max-min 
+\item Mention several other multiuser IRS papers that employ max-min
+\item Mention the relay-assisted two-way communication papers
+
+\end{itemize}
+
+\textbf{Temporary notes - Problem formulation}
 
 \begin{itemize}
 
@@ -202,7 +299,7 @@ The optimization problem (\ref{eq:6}) is non-convex due to non-concave objective
 
 \end{itemize}
 
-\textbf{Temporary notes old}
+\textbf{Temporary notes - System model}
 
 \begin{itemize}
 
@@ -239,12 +336,6 @@ The optimization problem (\ref{eq:6}) is non-convex due to non-concave objective
 
 \end{itemize}
 
-
-
-
-\section{Minimum Secrecy Rate Maximization}
-
-Show the steps of solving the problem
 
 
 \section{Numerical Results}

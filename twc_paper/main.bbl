@@ -18,6 +18,12 @@
 \fi
 #2}}
 
+\bibitem{atapattu2020}
+S.~Atapattu, R.~Fan, P.~Dharmawansa, G.~Wang, J.~Evans, and T.~A. Tsiftsis,
+  ``Reconfigurable intelligent surface assisted two--way communications:
+  Performance analysis and optimization,'' \emph{IEEE Transactions on
+  Communications}, vol.~68, no.~10, pp. 6552--6567, 2020.
+
 \bibitem{doppler2009device}
 K.~Doppler, M.~Rinne, C.~Wijting, C.~B. Ribeiro, and K.~Hugl,
   ``Device-to-device communication as an underlay to lte-advanced networks,''

@@ -78,7 +78,7 @@ function mouseReleased() {
   counter = 0
   for (let c of circles) {
     counter = counter+1
-    text_value = text_value + (c.p.x*2/25-28).toFixed(2) + ' ' + (20-c.p.y*2/25).toFixed(2) + ';'
+    text_value = text_value + (c.p.x*6/25-84).toFixed(2) + ' ' + (60-c.p.y*6/25).toFixed(2) + ';'
     if (counter%3 == 0) {
       text_value = text_value + '\n'
     }
