@@ -74,12 +74,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 
-num_seeds = 50 - 1;
+num_seeds = 100 - 1;
 f = waitbar(0,'Please wait...');
 
 
 global seed;
 for seed = 0:num_seeds
+
+    seed
     seed_flag = 0;
 
     waitbar(seed/num_seeds,f,'Simulating...');
@@ -110,7 +112,7 @@ for seed = 0:num_seeds
         eves_stack = eves_inf_all();
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        outer_iter = 5;
+        outer_iter = 10;
 
         upper_t = 20;
         lower_t = 0;
@@ -128,8 +130,12 @@ for seed = 0:num_seeds
             %
             % Power optimization - Successive convex approximation
             %
+            fprintf('\n')
+            fprintf('l :')
 
             for l = 1:100
+
+                fprintf(string(l))
 
                 try
 
@@ -178,8 +184,8 @@ for seed = 0:num_seeds
                 if string(cvx_status) == string('Infeasible')
                     lower_z = z;
                 elseif string(cvx_status) == string('Failed')
-                    break;
                     fprintf('Failed')
+                    break;
                 else
                     upper_z = z;
                     if z < 0
@@ -203,6 +209,16 @@ for seed = 0:num_seeds
             if seed_flag == 1
                 break;
             end
+
+            fprintf(' z: ')
+            fprintf(string(z))
+
+
+            fprintf('\n')
+            fprintf('m :')
+
+
+
             % Reflection phase optimization
             % Successive Convex Approximation (SCA)
             %
@@ -210,6 +226,8 @@ for seed = 0:num_seeds
             for m = 1:100
 
 
+                fprintf(string(m))
+                fprintf('|')
                 try
                     cvx_begin quiet
                     % cvx_precision high
@@ -245,9 +263,10 @@ for seed = 0:num_seeds
                     lower_t = t;
 
                 elseif string(cvx_status) == string('Failed')
+                    lower_t = t;
                     fprintf('Failed')
-                    seed_flag = 1;
-                    break;
+                    % seed_flag = 1;
+                    % break;
 
 
                 else
@@ -264,7 +283,7 @@ for seed = 0:num_seeds
 
                 t = (lower_t + upper_t)/2;
 
-                if (upper_t - lower_t) < 0.01
+                if (upper_t - lower_t) < 0.1
 %                     fprintf('reached IRS');
                     t;
                     break;
@@ -272,6 +291,9 @@ for seed = 0:num_seeds
 
             end
             W = temp_W;
+
+            fprintf(' t: ')
+            fprintf(string(t))
             if seed_flag == 1
                 break;
             end
@@ -1045,7 +1067,7 @@ end
 function ricean_channel = get_ricean_channel(dist, pl, L,rng_val_)
     % Generates rayleigh fading channel through the IRS
     %
-    kappa = 0;
+    kappa = 8;
     g1 = sqrt(kappa/(1+kappa));
     g2 = sqrt(1/(2*(1+kappa)));
 
@@ -1061,7 +1083,7 @@ end
 function ricean_direct_channel = get_ricean_direct_channel(dist, pl, rng_val_)
     % Generates ricean fading channel for the direct path
     %
-    kappa = 0;
+    kappa = 8;
     g1 = sqrt(kappa/(1+kappa));
     g2 = sqrt(1/(2*(1+kappa)));
 

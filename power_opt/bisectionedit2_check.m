@@ -124,7 +124,7 @@ for seed = 0:num_seeds
         eves_stack = eves_inf_all();
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        outer_iter = 5;
+        outer_iter = 10;
 
         upper_t = 20;
         lower_t = 0;
@@ -196,8 +196,8 @@ for seed = 0:num_seeds
                 if string(cvx_status) == string('Infeasible')
                     lower_z = z;
                 elseif string(cvx_status) == string('Failed')
-                    break;
                     fprintf('Failed')
+                    break;
                 else
                     upper_z = z;
                     if z < 0
@@ -231,17 +231,17 @@ for seed = 0:num_seeds
 
 
 
-%             % Reflection phase optimization
-%             % Successive Convex Approximation (SCA)
-%             %
+            % Reflection phase optimization
+            % Successive Convex Approximation (SCA)
+            %
 
             for m = 1:100
 
                 
                 fprintf(string(m))
                 fprintf('|')
-                fprintf(string(t))
-                fprintf('|')
+                % fprintf(string(t))
+                % fprintf('|')
                 try
                     cvx_begin quiet
                     % cvx_precision high
@@ -278,9 +278,10 @@ for seed = 0:num_seeds
                     lower_t = t;
 
                 elseif string(cvx_status) == string('Failed')
+                    lower_t = t;
                     fprintf('Failed')
-                    seed_flag = 1;
-                    break;
+                    % seed_flag = 1;
+                    % break;
 
 
                 else
@@ -297,7 +298,7 @@ for seed = 0:num_seeds
 
                 t = (lower_t + upper_t)/2;
 
-                if (upper_t - lower_t) < 0.01
+                if (upper_t - lower_t) < 0.1
 %                     fprintf('reached IRS');
                     t;
                     break;
@@ -312,18 +313,7 @@ for seed = 0:num_seeds
                 break;
             end
 
-            if cvx_status == 'Failed'
-                cvx_status
-                seed
-                L
-                continue;
-            else
-                W = X;
-            end
 
-            if seed_flag == 1
-                break;
-            end
         end % end of outer iteration
         if seed_flag == 0
             [min_value, rate_list] = get_min_rate(P_hat);
