@@ -1,46 +1,10 @@
 
 % Initializing number of pairs
 global n;
-n = 2;
+n = 1;
 
 % Position of all the nodes
-% n = 5
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% 16.44 -6.14;20.99 -2.66;23.06 18.20;
-% 21.79 12.58;-0.83 18.29;2.15 13.24;
-% ];
-
-% Mixed up
-% coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
-% -13.01 -13.73;7.04 -7.78;-18.36 12.34;
-% 20.76 14.56;6.71 3.45;22.99 -7.56;
-% -20.08 -0.13;5.20 15.50;15.38 -18.26;
-% ];
-
-% n = 2
-coords = [47.69 40.63;86.29 51.13;-87.39 9.21;-53.35 -11.79;0.00 97.50;0.00 -97.50];
-
-% Mixed up
-% coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
-% -13.01 -13.73;5.20 15.50;15.38 -38.26
-% ];
-
-% symmetric 1
-% coords = [-24 -4;-16 -12;24 -4;
-% 16 -12;0 18;0 8;
-% ];
-
-% n = 3
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% -0.83 18.29;2.15 13.24;];
-
-% n = 4
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% 16.44 -6.14;20.99 -2.66;-0.83 18.29;2.15 13.24;
-% ];
+coords = [-76.07 -95.87;-13.18 -46.43;0.00 97.50;0.00 -97.50];
 
 % Preparing the Euclidean distance matrix
 global dist;
@@ -71,8 +35,10 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
+a1_master_list = [];
+b1_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 3 - 1;
 f = waitbar(0,'Please wait...');
 
 
@@ -84,6 +50,8 @@ for seed = 0:num_seeds
 
     waitbar(seed/num_seeds,f,'Simulating...');
     min_list = [];
+    a1_list = [];
+    b1_list = [];
 
     % Number of elements in the IRS
     global L;
@@ -94,7 +62,6 @@ for seed = 0:num_seeds
         w = [wi ; 1].';
 
         global W; % Check this again
-        % W = remove_small(w'*w);
         W = w'*w;
 
         % Generating all the channels before algorithm loop starts
@@ -110,7 +77,7 @@ for seed = 0:num_seeds
         eves_stack = eves_inf_all();
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        outer_iter = 10;
+        outer_iter = 20;
 
         upper_t = 20;
         lower_t = 0;
@@ -148,17 +115,11 @@ for seed = 0:num_seeds
 
                         for u = 1:length(user_list)
 
-                            % for n = 2
-                            -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
-                            -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
+                            % for n = 1
+                            5-log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*remove_small(H_(user_list(u),1,1)))...
+                            -log(sigma_c + P(p_(user_list(u),2,1))*remove_small(H_(user_list(u),2,1)))...
                             -get_S(user_list(u),P_hat)...
                             -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
-
-                            % for n = 3
-                            % -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
-                            % -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
-                            % -get_S(user_list(u),P_hat)...
-                            % - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
 
                         end
 
@@ -197,7 +158,7 @@ for seed = 0:num_seeds
                 z = (lower_z + upper_z)/2;
 
                 if (upper_z - lower_z) < 0.1
-%                     fprintf('Reached power');
+        %                     fprintf('Reached power');
                     z;
                     break;
                 end
@@ -231,24 +192,24 @@ for seed = 0:num_seeds
                     % cvx_precision high
                     cvx_solver Mosek
                     variable X(L+1,L+1) complex semidefinite %symmetric
-    
+
                     minimize 0
-    
+
                     subject to
 
                         for u = 1:length(user_list)
-    
+
                             % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                            -log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
+                            5-log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop)-log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-(get_S(user_list(u),P_hat)+real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W))))) <= t;
                         end
-    
+
                         diag(X) == 1;
                         % norm((X-W),1)<=2*exp(-outer_iter/2);
                         % norm((X-W),1)<=2;
                     cvx_end
 
                     cvx_status;
-    
+
                 catch
                     fprintf('skipped')
                     cvx_status
@@ -307,16 +268,20 @@ for seed = 0:num_seeds
 
 
         min_list = [min_list, min_value];
+        a1_list = [a1_list, rate_list(1)];
+        b1_list = [b1_list, rate_list(2)];
 
     end % end of L iteration
     min_master_list = cat(1,min_master_list,min_list);
+    a1_master_list = cat(1,a1_master_list,a1_list);
+    b1_master_list = cat(1,b1_master_list,b1_list);
 end % end of random seed iteration
 
 close(f)
 
 figure(1)
-plot(L_list,mean(min_master_list,'omitnan'));
-ylim([0 4])
+plot(L_list,mean(min_master_list),L_list,mean(a1_master_list),L_list,mean(b1_master_list));
+% ylim([2 4])
 xlabel('Number of elements')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,6 +293,7 @@ function S = get_S(user,P_hat)
     %
 
     global W;
+    global n;
 
     user = char(user);
     user_id = get_index(user);
@@ -341,10 +307,14 @@ function S = get_S(user,P_hat)
     global eves_stack;
 
     eves_power_all = filter_power_values(char(user), P_hat,"eves_inf_all");
-    leg_power = filter_power_values(char(user), P_hat,"leg_inf");
-
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
+
+    if n~=1
+        leg_power = filter_power_values(char(user), P_hat,"leg_inf");
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    else
+        leg_inf_term1 = 0;
+    end
 
     term_1 = real(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = real(trace(eves_inf_term2*W) + sigma_c);
@@ -447,15 +417,19 @@ function grad_P = get_grad_P(user, P_hat,W)
     global user_list;
     global leg_inf_stacks;
     global eves_stack;
+    global n;
 
     eves_power_all = filter_power_values(char(user), P_hat,"eves_inf_all");
-    leg_power = filter_power_values(char(user), P_hat,"leg_inf");
 
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
 
-    term_1 = (trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = (trace(eves_inf_term2*W) + sigma_c);
+
+    if n ~= 1
+        leg_power = filter_power_values(char(user), P_hat,"leg_inf");
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+        term_1 = (trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
+    end
 
     grad_list = [];
     counter = 0;
@@ -468,7 +442,7 @@ function grad_P = get_grad_P(user, P_hat,W)
             value = value + trace(leg_inf_stacks(:,:,counter,user_id)*W)/term_1;
         end
 
-        grad_list = [grad_list real(-value)];
+        grad_list = [grad_list real(value)];
     end
 
     grad_P = grad_list';
@@ -510,17 +484,23 @@ function grad_S = get_grad_S(user, power_list, W)
 
     global leg_inf_stacks;
     global eves_stack;
+    global n;
 
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
-    leg_power = filter_power_values(char(user), power_list,"leg_inf");
 
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
+
+    if n~=1
+        leg_power = filter_power_values(char(user), power_list,"leg_inf");
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    else
+        leg_inf_term1 = 0;
+    end
 
     term_1 = leg_inf_term1/(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = eves_inf_term2/(trace(eves_inf_term2*W) + sigma_c);
 
-    grad_S = -(term_1+term_2);
+    grad_S = (term_1+term_2);
     
 end
 
@@ -602,6 +582,7 @@ function rate = get_rate(user, power_list)
     user_id = get_index(user);
 
     global W;
+    global n;
     global leg_inf_with_opp_stacks;
     global eves_inf_with_self_stacks;
     global leg_inf_stacks;
@@ -614,7 +595,12 @@ function rate = get_rate(user, power_list)
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
     leg_power = filter_power_values(char(user), power_list,"leg_inf");
 
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    if n~=1
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    else
+        leg_inf_term1 = 0;
+    end
+
     leg_inf_term2 = dot_product(leg_power_with_opp', leg_inf_with_opp_stacks(:,:,:,user_id));
     eves_inf_term1 = dot_product(eves_power_with_self',eves_inf_with_self_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
@@ -1030,10 +1016,8 @@ function H = get_H(dti,dir,dtr,L,Lo,pl,rng_val)
 
     % LOS channel : Used for Users to IRS channels
     Lo2 = 10^(2*-2.55012);
-    % Lo2 = 0.001;
     % NLOS channel : Used for direct path
     Lo3 = 10^(2*-1.94515);
-    % Lo3 = 0.001;
 
     gti = get_ricean_channel(dti, 2.2, L, 5*rng_val);
     gir = get_ricean_channel(dir, 2.2, L, 5*rng_val+2); %2.2

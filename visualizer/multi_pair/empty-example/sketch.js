@@ -20,28 +20,44 @@ class Circle {
 }
 
 let bg
+let button
 
 function setup() {
-  n = 2
+  n = 5
+  r = 20*4
   hover = null
   grabbed = null
   tx_circle = null
   rx_circle = null
   irs_circle = null
-  h = 503
-  w = 702
+  h = 800
+  w = 800
   bg = loadImage('background.png')
   createCanvas(w, h)
+  button = createButton('New setup');
+  button.position(0, 0);
+  button.mousePressed(changeBG);
   ellipseMode(RADIUS)
   circles = []
 
   for (let i = 0; i < n; i++) { 
-    circles.push(new Circle(random(width), random(height), 20,"A".concat((i+1).toString()),i+1))
-    circles.push(new Circle(random(width), random(height), 20,"B".concat((i+1).toString()),i+1))
+    pos_x = random(width)
+    pos_y = random(height)
+    theta = random(0,TWO_PI)
+
+    while (!(valid_point(pos_x + r*cos(theta),pos_y + r*sin(theta)) && valid_point(pos_x - r*cos(theta), pos_y - r*sin(theta)))) {
+      pos_x = random(width)
+      pos_y = random(height)
+      theta = random(0,TWO_PI)
+    }
+    circles.push(new Circle(pos_x + r*cos(theta), pos_y + r*sin(theta), 20,"A".concat((i+1).toString()),i+1))
+    circles.push(new Circle(pos_x - r*cos(theta), pos_y - r*sin(theta), 20,"B".concat((i+1).toString()),i+1))
   }
 
-  circles.push(new Circle(random(width), random(height), 20,"IRS",0))
-  circles.push(new Circle(random(width), random(height), 20,"C",-1))
+  // circles.push(new Circle(random(width), random(height), 20,"IRS",0))
+  // circles.push(new Circle(random(width), random(height), 20,"E",-1))
+  circles.push(new Circle(width/2, 10, 20,"IRS",0))
+  circles.push(new Circle(width/2, height-10, 20,"E",-1))
 }
 
 function draw() {
@@ -78,7 +94,7 @@ function mouseReleased() {
   counter = 0
   for (let c of circles) {
     counter = counter+1
-    text_value = text_value + (c.p.x*6/25-84).toFixed(2) + ' ' + (60-c.p.y*6/25).toFixed(2) + ';'
+    text_value = text_value + (c.p.x/4-100).toFixed(2) + ' ' + (100-c.p.y/4).toFixed(2) + ';'
     if (counter%3 == 0) {
       text_value = text_value + '\n'
     }
@@ -129,4 +145,14 @@ function get_distance(tx_vec, rx_vec) {
 function random_rgba(q) {
   var o = Math.round,p = 0.3, u = 0.5, r = 0.8, s = 100;
   return 'rgba(' + o(p*s*q%200) + ',' + o(u*s*q%200) + ',' + o(r*s*q%200) + ',' + r.toFixed(1) + ')';
+}
+
+function valid_point(position_x, position_y) {
+  return (position_x > 0 && position_x < 800 && position_y > 0 && position_y < 800)
+
+}
+
+
+function changeBG() {
+  setup();
 }
