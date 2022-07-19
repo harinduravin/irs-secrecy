@@ -29,16 +29,22 @@ five_min_master_list = cat(1,five_min_master_list,min_master_list);
 
 L_list = 5:5:40;
 
-plot(L_list,mean(one_min_master_list),'DisplayName','Single pair','Marker','o');
+plot(L_list,mean(one_min_master_list),'DisplayName','Single pair','Marker','o','LineWidth',1.5);
 hold on;
-plot(L_list,mean(two_min_master_list,'omitnan'),'DisplayName','Two pair','Marker','*');
-plot(L_list,mean(three_min_master_list),'DisplayName','Three pair','Marker','^');
-plot(L_list,mean(four_min_master_list),'DisplayName','Four pair','Marker','x');
-plot(L_list,mean(five_min_master_list),'DisplayName','Five pair','Marker','+');
+plot(L_list,mean(two_min_master_list,'omitnan'),'DisplayName','Two pair','Marker','*','LineWidth',1.5);
+plot(L_list,mean(three_min_master_list),'DisplayName','Three pair','Marker','^','LineWidth',1.5);
+plot(L_list,mean(four_min_master_list),'DisplayName','Four pair','Marker','x','LineWidth',1.5);
+plot(L_list,mean(five_min_master_list),'DisplayName','Five pair','Marker','+','LineWidth',1.5);
 ax = gca;
 ax.FontSize = 12;
+ax.FontName = 'Times';
 xlim([5 40])
-xlabel('Number of IRS elements')
-ylabel('Minimum secrecy Rate(bits/sec/Hz)')
-lgd = legend('Location','eastoutside');
+xlabel('Number of IRS elements','Interpreter','latex','FontName','Times','FontSize',12)
+ylabel('Minimum secrecy Rate(bits/sec/Hz)','Interpreter','latex','FontName','Times','FontSize',12)
+lgd = legend('Location','best','Interpreter','latex');
 lgd.FontSize = 12;
+lgd.FontName = 'Times';
+lgd.Position = [0.6656    0.3651    0.2245    0.2429];
+grid on;
+
+print -depsc2 chart_100.eps

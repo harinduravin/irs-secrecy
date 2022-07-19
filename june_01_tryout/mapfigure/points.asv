@@ -42,18 +42,15 @@ labelpoints(a,b,c,'N',0.2,'FontSize',10,'FontName','Times')
 ax = gca;
 ax.FontSize = 12;
 ax.FontName = 'Times';
-ax.Box = 'on';
 
 ylim([-100 100])
 xlim([-100 100])
-xlabel('X (m)','Interpreter','latex','FontName','Times','FontSize',12)
-ylabel('Y (m)', 'Interpreter','latex','FontName','Times','FontSize',12)
-xticks([-100 -75 -50 -25 0 25 50 75 100])
-yticks([-100 -75 -50 -25 0 25 50 75 100])
+xlabel('X (m)','Interpreter','latex',FontName = 'Times')
+ylabel('Y (m)', 'Interpreter','latex',FontName = 'Times')
 % lgd = legend('Location','eastoutside');
 % lgd.FontSize = 12;
 lgd = legend('Location','southeast','FontSize',12,'Interpreter','latex',FontName = 'Times');
 grid on;
-axis equal;
+axis() ;
 
-print -depsc2 positions.eps
+print -depsc2 test.eps

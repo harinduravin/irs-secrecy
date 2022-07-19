@@ -385,6 +385,7 @@ addParameter(p, 'stacked', 'down');
 
 addParameter(p, 'axHand', 0, @ishandle);
 addParameter(p, 'FontSize', 10, @isnumeric);
+addParameter(p, 'FontName', 'Times');
 addParameter(p, 'FontWeight', 'normal');
 addParameter(p, 'Color', 'k');
 addParameter(p, 'BackgroundColor', 'none');
@@ -530,7 +531,7 @@ if sum(strcmp('stacked', varargin))==1
     for s = 2:nlabs
         
         %Temperarily plot the s-1 label, get its position, then delete it.
-        labhand = text(xpos(s-1)+u1 , ypos(s-1)+u2, labels(s-1), 'VerticalAlignment',va, 'HorizontalAlignment',ha, 'FontSize', p.Results.FontSize, 'Parent', axHand);
+        labhand = text(xpos(s-1)+u1 , ypos(s-1)+u2, labels(s-1), 'VerticalAlignment',va, 'HorizontalAlignment',ha, 'FontSize', p.Results.FontSize,'FontName', p.Results.FontName, 'Parent', axHand);
         label_extnt_norm = get(labhand, 'extent');
         delete(labhand)
         
@@ -712,11 +713,11 @@ end %outlier_flag
 if multiColor
     hand = zeros(size(labels));
     for k = 1:length(labels)
-        hand(k) = text(xpos(k)+u1 , ypos(k)+u2, labels{k}, 'VerticalAlignment',va, 'HorizontalAlignment',ha, 'FontSize', p.Results.FontSize, 'color', labelColors(k,:), 'FontWeight', p.Results.FontWeight, 'Parent', axHand);
+        hand(k) = text(xpos(k)+u1 , ypos(k)+u2, labels{k}, 'VerticalAlignment',va, 'HorizontalAlignment',ha, 'FontSize', p.Results.FontSize,'FontName', p.Results.FontName, 'color', labelColors(k,:), 'FontWeight', p.Results.FontWeight, 'Parent', axHand);
     end
 else
     %Label points all with 1 color (faster)
-    hand = text(xpos+u1 , ypos+u2, labels, 'VerticalAlignment',va, 'HorizontalAlignment',ha, 'FontSize', p.Results.FontSize, 'color', labelColors, 'BackgroundColor', p.Results.BackgroundColor, 'FontWeight', p.Results.FontWeight, 'Parent', axHand);
+    hand = text(xpos+u1 , ypos+u2, labels, 'VerticalAlignment',va, 'HorizontalAlignment',ha, 'FontSize', p.Results.FontSize,'FontName', p.Results.FontName, 'color', labelColors, 'BackgroundColor', p.Results.BackgroundColor, 'FontWeight', p.Results.FontWeight, 'Parent', axHand);
 end
 extnt = get(hand, 'extent');
 
