@@ -1,12 +1,14 @@
 
 % Initializing number of pairs
 global n;
-n = 1;
+n = 2;
 
 % Position of all the nodes
-% n = 1
+% n = 2
 
-coords = [50.13 76.03;31.56 40.60;0.00 97.50;0.00 -97.50];
+coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
+-88.72 -78.33;
+0.00 97.50;0.00 -97.50];
 
 % Preparing the Euclidean distance matrix
 global dist;
@@ -39,7 +41,7 @@ end
 min_master_list = [];
 all_master_list = [];
 
-num_seeds = 10 - 1;
+num_seeds = 40 - 1;
 f = waitbar(0,'Please wait...');
 
 
@@ -65,7 +67,9 @@ for seed = 0:num_seeds
         w = [wi ; 1].';
 
         global W; % Check this again
+        % W = remove_small(w'*w);
         W = w'*w;
+%         temp_W = zeros(size(W));
 
         % Generating all the channels before algorithm loop starts
         %
@@ -114,9 +118,9 @@ for seed = 0:num_seeds
 
                     for u = 1:length(user_list)
 
-                        % for n = 1
-                        20-log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*remove_small(H_(user_list(u),1,1)))...
-                        -log(sigma_c + P(p_(user_list(u),2,1))*remove_small(H_(user_list(u),2,1)))...
+                        % for n = 2
+                        20-log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
+                        -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
                         -get_S(user_list(u),P_hat)...
                         -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
 
@@ -139,23 +143,17 @@ for seed = 0:num_seeds
                 break;
             end
 
-            if string(cvx_status) == string('Infeasible')
-                fprintf('infeasible')
-            elseif string(cvx_status) == string('Failed')
-                fprintf('failed')
-            else
-                P_hat = P;
-            end
+            P_hat = P;
 
             if seed_flag == 1
                 break;
             end
 
-                fprintf('\n')
-                fprintf('P values :')
-                for x = 1:(2*n)
-                    fprintf('|')
-                    fprintf(string(P_hat(x)))
+            fprintf('\n')
+            fprintf('P values :')
+            for x = 1:(2*n)
+                fprintf('|')
+                fprintf(string(P_hat(x)))
             end
 
             % fprintf(' z: ')
@@ -167,89 +165,89 @@ for seed = 0:num_seeds
 
 
 
-            % Reflection phase optimization
-            % Successive Convex Approximation (SCA)
-            %
-
-            for m = 1:100
-
-
-                fprintf(string(m))
-                fprintf('|')
-                try
-                    cvx_begin quiet
-                    % cvx_precision high
-                    cvx_solver Mosek
-                    variable X(L+1,L+1) complex semidefinite %symmetric
-
-                    minimize 0
-
-                    subject to
-
-                        for u = 1:length(user_list)
-
-                            % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                            10-log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
-                        end
-
-                        diag(X) == 1;
-                        % norm((X-W),1)<=2*exp(-outer_iter/2);
-                        % norm((X-W),1)<=8;
-                    cvx_end
-
-                    cvx_status;
-
-                catch
-                    fprintf('skipped')
-                    cvx_status
-                    seed;
-                    seed_flag = 1;
-                    break;
-                end
-
-                if string(cvx_status) == string('Infeasible')
-                    lower_t = t;
-
-                elseif string(cvx_status) == string('Failed')
-                    lower_t = t;
-                    fprintf('Failed')
-                    % seed_flag = 1;
-                    % break;
-
-
-                else
-                    upper_t = t;
-                    if t < 0
-                        lower_t = (1.3)*t;
-                    else
-                        lower_t = (0.7)*t;
-                    end
-
-                    temp_W = X;
-
-                end
-
-                t = (lower_t + upper_t)/2;
-
-                if (upper_t - lower_t) < 0.2
-%                     fprintf('reached IRS');
-                    t;
-                    break;
-                end
-
-            end
-            W = temp_W;
-
-            fprintf(' t: ')
-            fprintf(string(t))
-            if seed_flag == 1
-                break;
-            end
+%             % Reflection phase optimization
+%             % Successive Convex Approximation (SCA)
+%             %
+% 
+%             for m = 1:100
+% 
+% 
+%                 fprintf(string(m))
+%                 fprintf('|')
+%                 try
+%                     cvx_begin quiet
+%                     % cvx_precision high
+%                     cvx_solver Mosek
+%                     variable X(L+1,L+1) complex semidefinite %symmetric
+%     
+%                     minimize 0
+%     
+%                     subject to
+% 
+%                         for u = 1:length(user_list)
+%     
+%                             % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
+%                             10-log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
+%                         end
+%     
+%                         diag(X) == 1;
+%                         % norm((X-W),1)<=2*exp(-outer_iter/2);
+%                         % norm((X-W),1)<=8;
+%                     cvx_end
+% 
+%                     cvx_status;
+%     
+%                 catch
+%                     fprintf('skipped')
+%                     cvx_status
+%                     seed;
+%                     seed_flag = 1;
+%                     break;
+%                 end
+% 
+%                 if string(cvx_status) == string('Infeasible')
+%                     lower_t = t;
+% 
+%                 elseif string(cvx_status) == string('Failed')
+%                     lower_t = t;
+%                     fprintf('Failed')
+%                     % seed_flag = 1;
+%                     % break;
+% 
+% 
+%                 else
+%                     upper_t = t;
+%                     if t < 0
+%                         lower_t = (1.3)*t;
+%                     else
+%                         lower_t = (0.7)*t;
+%                     end
+% 
+%                     temp_W = X;
+% 
+%                 end
+% 
+%                 t = (lower_t + upper_t)/2;
+% 
+%                 if (upper_t - lower_t) < 0.2
+% %                     fprintf('reached IRS');
+%                     t;
+%                     break;
+%                 end
+% 
+%             end
+%             W = temp_W;
+% 
+%             fprintf(' t: ')
+%             fprintf(string(t))
+%             if seed_flag == 1
+%                 break;
+%             end
 
 
         end % end of outer iteration
         if seed_flag == 0
-            [min_value, rate_list] = get_min_rate(P_hat)
+            [min_value, rate_list] = get_min_rate(P_hat);
         elseif seed_flag == 1
             min_value = nan;
             seed_flag = 0;
@@ -264,6 +262,9 @@ for seed = 0:num_seeds
     all_master_list = cat(3,all_master_list, all_list);
 end % end of random seed iteration
 
+mean_user_rates = mean(all_master_list,3);
+
+
 close(f)
 
 figure(1)
@@ -271,6 +272,8 @@ plot(L_list,mean(min_master_list,'omitnan'));
 hold on;
 plot(L_list,mean_user_rates(:,1)','DisplayName','A1');
 plot(L_list,mean_user_rates(:,2)','DisplayName','B1');
+plot(L_list,mean_user_rates(:,3)','DisplayName','A2');
+plot(L_list,mean_user_rates(:,4)','DisplayName','B2');
 
 
 ylim([-1 5])
@@ -288,7 +291,6 @@ function S = get_S(user,P_hat)
     %
 
     global W;
-    global n;
 
     user = char(user);
     user_id = get_index(user);
@@ -302,14 +304,10 @@ function S = get_S(user,P_hat)
     global eves_stack;
 
     eves_power_all = filter_power_values(char(user), P_hat,"eves_inf_all");
-    eves_inf_term2 = dot_product(eves_power_all',eves_stack);
+    leg_power = filter_power_values(char(user), P_hat,"leg_inf");
 
-    if n~=1
-        leg_power = filter_power_values(char(user), P_hat,"leg_inf");
-        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
-    else
-        leg_inf_term1 = 0;
-    end
+    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    eves_inf_term2 = dot_product(eves_power_all',eves_stack);
 
     term_1 = real(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = real(trace(eves_inf_term2*W) + sigma_c);
@@ -412,19 +410,15 @@ function grad_P = get_grad_P(user, P_hat,W)
     global user_list;
     global leg_inf_stacks;
     global eves_stack;
-    global n;
 
     eves_power_all = filter_power_values(char(user), P_hat,"eves_inf_all");
+    leg_power = filter_power_values(char(user), P_hat,"leg_inf");
 
+    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
 
+    term_1 = (trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = (trace(eves_inf_term2*W) + sigma_c);
-
-    if n ~= 1
-        leg_power = filter_power_values(char(user), P_hat,"leg_inf");
-        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
-        term_1 = (trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
-    end
 
     grad_list = [];
     counter = 0;
@@ -479,18 +473,12 @@ function grad_S = get_grad_S(user, power_list, W)
 
     global leg_inf_stacks;
     global eves_stack;
-    global n;
 
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
+    leg_power = filter_power_values(char(user), power_list,"leg_inf");
 
+    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
-
-    if n~=1
-        leg_power = filter_power_values(char(user), power_list,"leg_inf");
-        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
-    else
-        leg_inf_term1 = 0;
-    end
 
     term_1 = leg_inf_term1/(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = eves_inf_term2/(trace(eves_inf_term2*W) + sigma_c);
@@ -577,7 +565,6 @@ function rate = get_rate(user, power_list)
     user_id = get_index(user);
 
     global W;
-    global n;
     global leg_inf_with_opp_stacks;
     global eves_inf_with_self_stacks;
     global leg_inf_stacks;
@@ -590,12 +577,7 @@ function rate = get_rate(user, power_list)
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
     leg_power = filter_power_values(char(user), power_list,"leg_inf");
 
-    if n~=1
-        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
-    else
-        leg_inf_term1 = 0;
-    end
-
+    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     leg_inf_term2 = dot_product(leg_power_with_opp', leg_inf_with_opp_stacks(:,:,:,user_id));
     eves_inf_term1 = dot_product(eves_power_with_self',eves_inf_with_self_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);

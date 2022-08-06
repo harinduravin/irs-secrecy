@@ -106,7 +106,7 @@ for seed = 0:num_seeds
                 cvx_begin quiet
                 cvx_solver Mosek
                 variable P(2*n,1)
-                % variable z
+%                 variable z
 
                 minimize z
 
@@ -167,89 +167,89 @@ for seed = 0:num_seeds
 
 
 
-            % Reflection phase optimization
-            % Successive Convex Approximation (SCA)
-            %
-
-            for m = 1:100
-
-
-                fprintf(string(m))
-                fprintf('|')
-                try
-                    cvx_begin quiet
-                    % cvx_precision high
-                    cvx_solver Mosek
-                    variable X(L+1,L+1) complex semidefinite %symmetric
-
-                    minimize 0
-
-                    subject to
-
-                        for u = 1:length(user_list)
-
-                            % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                            10-log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
-                        end
-
-                        diag(X) == 1;
-                        % norm((X-W),1)<=2*exp(-outer_iter/2);
-                        % norm((X-W),1)<=8;
-                    cvx_end
-
-                    cvx_status;
-
-                catch
-                    fprintf('skipped')
-                    cvx_status
-                    seed;
-                    seed_flag = 1;
-                    break;
-                end
-
-                if string(cvx_status) == string('Infeasible')
-                    lower_t = t;
-
-                elseif string(cvx_status) == string('Failed')
-                    lower_t = t;
-                    fprintf('Failed')
-                    % seed_flag = 1;
-                    % break;
-
-
-                else
-                    upper_t = t;
-                    if t < 0
-                        lower_t = (1.3)*t;
-                    else
-                        lower_t = (0.7)*t;
-                    end
-
-                    temp_W = X;
-
-                end
-
-                t = (lower_t + upper_t)/2;
-
-                if (upper_t - lower_t) < 0.2
-%                     fprintf('reached IRS');
-                    t;
-                    break;
-                end
-
-            end
-            W = temp_W;
-
-            fprintf(' t: ')
-            fprintf(string(t))
-            if seed_flag == 1
-                break;
-            end
+%             % Reflection phase optimization
+%             % Successive Convex Approximation (SCA)
+%             %
+% 
+%             for m = 1:100
+% 
+% 
+%                 fprintf(string(m))
+%                 fprintf('|')
+%                 try
+%                     cvx_begin quiet
+%                     % cvx_precision high
+%                     cvx_solver Mosek
+%                     variable X(L+1,L+1) complex semidefinite %symmetric
+% 
+%                     minimize 0
+% 
+%                     subject to
+% 
+%                         for u = 1:length(user_list)
+% 
+%                             % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
+%                             10-log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
+%                         end
+% 
+%                         diag(X) == 1;
+%                         % norm((X-W),1)<=2*exp(-outer_iter/2);
+%                         % norm((X-W),1)<=8;
+%                     cvx_end
+% 
+%                     cvx_status;
+% 
+%                 catch
+%                     fprintf('skipped')
+%                     cvx_status
+%                     seed;
+%                     seed_flag = 1;
+%                     break;
+%                 end
+% 
+%                 if string(cvx_status) == string('Infeasible')
+%                     lower_t = t;
+% 
+%                 elseif string(cvx_status) == string('Failed')
+%                     lower_t = t;
+%                     fprintf('Failed')
+%                     % seed_flag = 1;
+%                     % break;
+% 
+% 
+%                 else
+%                     upper_t = t;
+%                     if t < 0
+%                         lower_t = (1.3)*t;
+%                     else
+%                         lower_t = (0.7)*t;
+%                     end
+% 
+%                     temp_W = X;
+% 
+%                 end
+% 
+%                 t = (lower_t + upper_t)/2;
+% 
+%                 if (upper_t - lower_t) < 0.2
+% %                     fprintf('reached IRS');
+%                     t;
+%                     break;
+%                 end
+% 
+%             end
+%             W = temp_W;
+% 
+%             fprintf(' t: ')
+%             fprintf(string(t))
+%             if seed_flag == 1
+%                 break;
+%             end
 
 
         end % end of outer iteration
         if seed_flag == 0
-            [min_value, rate_list] = get_min_rate(P_hat)
+            [min_value, rate_list] = get_min_rate(P_hat);
         elseif seed_flag == 1
             min_value = nan;
             seed_flag = 0;
