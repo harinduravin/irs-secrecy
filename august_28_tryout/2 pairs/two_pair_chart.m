@@ -1,48 +1,14 @@
 
 % Initializing number of pairs
 global n;
-n = 3;
+n = 2;
 
 % Position of all the nodes
-% n = 3
-
-% coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
-% -88.72 -78.33;-51.19 61.90;-11.20 61.29;
-% 0.00 97.50;0.00 -97.50];
-
-% coords = [50.36 -60.73;72.07 -94.33;-34.32 70.55;
-% -67.03 93.57;-0.37 -21.33;-39.40 -30.12;
-% 0.00 97.50;57.00 99.00;
-% ];
-
-% coords = [-3.80 27.68;20.72 59.28;-84.47 -92.01;
-% -60.70 -59.84;43.55 -17.31;78.88 1.45;
-% 0.00 97.50;-16.00 -22.75;
-% ];
-
-% The new experiment 100.00 0.00
-% coords = [-15.67 -49.65;-51.77 -32.41;41.93 75.78;
-% 34.43 36.49;-70.43 71.51;-32.27 83.52;
-% 44.52 -48.17;84.23 -52.97;-35.71 25.02;
-% 4.18 21.93;0.00 97.50;0.00 -97.50;
-% ];
-
-% The new experiment after changing positions
-% coords = [-15.67 -49.65;-51.77 -32.41;41.93 75.78;
-% 34.43 36.49;-70.43 71.51;-32.27 83.52;
-% 44.52 -48.17;84.23 -52.97;-35.71 25.02;
-% 4.18 21.93;0.00 97.50;100.00 0.00;
-% ];
-
-% coords = [-15.67 -49.65;-51.77 -32.41;41.93 75.78;
-% 34.43 36.49;-70.43 71.51;-32.27 83.52;
-% 0.00 97.50;80.00 60.00;
-% ];
+% n = 2
 
 coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
--88.72 -78.33;-51.19 61.90;-11.20 61.29;
-0.00 97.50;0.00 0.00;
-];
+-88.72 -78.33;
+0.00 97.50;0.00 0.00];
 
 % Preparing the Euclidean distance matrix
 global dist;
@@ -50,7 +16,6 @@ dist = sqDistance(coords, coords);
 
 L_list = 0:5:40;
 L_list(1) = 1;
-no_IRS_mode = false;
 
 % Residual interference and noise values
 sigma_c = dbm2watt(-105);
@@ -79,12 +44,12 @@ all_master_list = [];
 min_inf_master_list = [];
 min_leaked_master_list = [];
 
-num_seeds = 40 - 1;
+num_seeds = 5 - 1;
 f = waitbar(0,'Please wait...');
 
 
 global seed;
-for seed = 20:num_seeds
+for seed = 0:num_seeds
 
     seed
     seed_flag = 0;
@@ -98,8 +63,7 @@ for seed = 20:num_seeds
     % Number of elements in the IRS
     global L;
     for L = L_list
-
-        no_IRS_mode = false;
+        
         fprintf('\n')
         fprintf(strcat("starting with ",string(L), " IRS elements."))
         fprintf('\n')
@@ -111,17 +75,6 @@ for seed = 20:num_seeds
         global W; % Check this again
         W = w'*w;
 
-        if L == 0
-            wi = zeros(5,1);
-            w = [wi ; 1].';
-            global W; % Check this again
-            W = w'*w;
-            no_IRS_mode = true;
-        end
-
-        if no_IRS_mode
-            L = 5;
-        end
 
         % Generating all the channels before algorithm loop starts
         %
@@ -135,9 +88,6 @@ for seed = 20:num_seeds
         eves_inf_with_self_stacks = get_stacks("eves_inf_with_self");
         eves_stack = eves_inf_all();
 
-        if no_IRS_mode
-            L = 0;
-        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         outer_iter = 10;
 
@@ -171,30 +121,30 @@ for seed = 20:num_seeds
                     cvx_solver Mosek
                     variable P(2*n,1)
                     % variable z
-    
+
                     maximize 0
-    
+
                     subject to
-    
+
                         for u = 1:length(user_list)
-    
-                            % for n = 3
-                            log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3)+ P(p_(user_list(u),1,4))*H_(user_list(u),1,4)+ P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
-                            +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3)+ P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
+
+                            % for n = 2
+                            log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
+                            +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
                             +get_S(user_list(u),P_hat)...
                             +(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) >= z;
-    
+
                         end
-    
+
                         for i = 1:length(user_list)
-    
+
                             P(i) <= dbm2watt(max_power); 
                             P(i) >= dbm2watt(min_power);
-    
+
                         end
                         norm((P-P_hat),1)<=1;
                     cvx_end
-    
+
                 catch
                     fprintf("skipped1")
                     cvx_status
@@ -251,103 +201,92 @@ for seed = 20:num_seeds
             fprintf('m :')
 
 
-            if (~no_IRS_mode)
-                % Reflection phase optimization
-                % Successive Convex Approximation (SCA)
-                %
-                for m = 1:100
+            % Reflection phase optimization
+            % Successive Convex Approximation (SCA)
+            %
+            for m = 1:100
 
 
-                    fprintf(string(m))
-                    fprintf('|')
-                    try
-                        cvx_begin quiet
-                        % cvx_precision high
-                        cvx_solver Mosek
-                        variable X(L+1,L+1) complex semidefinite %symmetric
-        
-                        maximize 0
-        
-                        subject to
+                fprintf(string(m))
+                fprintf('|')
+                try
+                    cvx_begin quiet
+                    % cvx_precision high
+                    cvx_solver Mosek
+                    variable X(L+1,L+1) complex semidefinite %symmetric
+    
+                    maximize 0
+    
+                    subject to
 
-                            for u = 1:length(user_list)
-        
-                                % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                                30+log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) +log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)+get_S(user_list(u),P_hat) + real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) >= t;
-                            end
-        
-                            diag(X) == 1;
-                            % norm((X-W),1)<=2*exp(-outer_iter/2);
-                            % norm((X-W),1)<=8;
-                        cvx_end
+                        for u = 1:length(user_list)
+    
+                            % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
+                            30+log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) +log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)+get_S(user_list(u),P_hat) + real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) >= t;
+                        end
+    
+                        diag(X) == 1;
+                        % norm((X-W),1)<=2*exp(-outer_iter/2);
+                        % norm((X-W),1)<=8;
+                    cvx_end
 
-                        cvx_status;
-
-                    catch
-                        fprintf('skipped')
-                        cvx_status
-                        seed;
-                        seed_flag = 1;
-                        break;
-                    end
-
-                    if string(cvx_status) == string('Infeasible')
-                        upper_t = t;
-
-                    elseif string(cvx_status) == string('Failed')
-                        upper_t = t;
-                        fprintf('F')
-
-                    else
-                        lower_t = t;
-                        % if t < 0
-                        %     upper_t = (0.7)*t;
-                        % else
-                        %     upper_t = (1.3)*t;
-                        % end
-
-                        temp_W = X;
-
-                    end
-
-                    t = (lower_t + upper_t)/2;
-
-                    if (j<4)
-                        delta = 0.8;
-                    elseif (j<7)
-                        delta = 0.3;
-                    else
-                        delta = 0.01;
-                    end
-
-                    if (upper_t - lower_t) < delta
-                        t;
-                        break;
-                    end
-
-
-                end
-                upper_t = (1.3)*t;
-                W = temp_W;
-
-                fprintf(' t: ')
-                fprintf(string(t))
-                if seed_flag == 1
+                    cvx_status;
+    
+                catch
+                    fprintf('skipped')
+                    cvx_status
+                    seed;
+                    seed_flag = 1;
                     break;
                 end
-            end % end of checking no IRS mode
+
+                if string(cvx_status) == string('Infeasible')
+                    upper_t = t;
+
+                elseif string(cvx_status) == string('Failed')
+                    upper_t = t;
+                    fprintf('F')
+
+                else
+                    lower_t = t;
+                    % if t < 0
+                    %     upper_t = (0.7)*t;
+                    % else
+                    %     upper_t = (1.3)*t;
+                    % end
+
+                    temp_W = X;
+
+                end
+
+                t = (lower_t + upper_t)/2;
+
+                if (j<4)
+                    delta = 0.8;
+                elseif (j<7)
+                    delta = 0.3;
+                else
+                    delta = 0.01;
+                end
+
+                if (upper_t - lower_t) < delta
+                    t;
+                    break;
+                end
+
+
+            end
+            upper_t = (1.3)*t;
+            W = temp_W;
+
+            fprintf(' t: ')
+            fprintf(string(t))
+            if seed_flag == 1
+                break;
+            end
+
         end % end of outer iteration
         toc
-
-        % if (~no_IRS_mode)
-        %     % Eigen decomposition
-        %     [U Si V] = svd(W);
-        %     w0 = U(:,1)/U(L+1,1);
-        %     w0 = w0./abs(w0);
-        %     W = w0*w0';        
-        %     % End of Eigen decomposition
-        % end
-
         if seed_flag == 0
             [min_value, rate_list, min_ind] = get_min_rate(P_hat);
             min_inf = get_interference(min_ind, P_hat)
@@ -390,8 +329,6 @@ plot(L_list,mean(min_leaked_master_list,'omitnan'),'DisplayName','Leaked informa
 % plot(L_list,mean_user_rates(:,2)','DisplayName','B1');
 % plot(L_list,mean_user_rates(:,3)','DisplayName','A2');
 % plot(L_list,mean_user_rates(:,4)','DisplayName','B2');
-% plot(L_list,mean_user_rates(:,5)','DisplayName','A3');
-% plot(L_list,mean_user_rates(:,6)','DisplayName','B3');
 
 % ylim([-1 5])
 xlabel('Number of elements')
