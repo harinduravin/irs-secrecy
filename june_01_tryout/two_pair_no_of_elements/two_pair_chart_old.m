@@ -4,42 +4,9 @@ global n;
 n = 2;
 
 % Position of all the nodes
-% n = 5
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% 16.44 -6.14;20.99 -2.66;23.06 18.20;
-% 21.79 12.58;-0.83 18.29;2.15 13.24;
-% ];
-
-% Mixed up
-% coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
-% -13.01 -13.73;7.04 -7.78;-18.36 12.34;
-% 20.76 14.56;6.71 3.45;22.99 -7.56;
-% -20.08 -0.13;5.20 15.50;15.38 -18.26;
-% ];
-
 % n = 2
-coords = [47.69 40.63;86.29 51.13;-87.39 9.21;-53.35 -11.79;0.00 97.50;0.00 -97.50];
-
-% Mixed up
-% coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
-% -13.01 -13.73;5.20 15.50;15.38 -38.26
-% ];
-
-% symmetric 1
-% coords = [-24 -4;-16 -12;24 -4;
-% 16 -12;0 18;0 8;
-% ];
-
-% n = 3
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% -0.83 18.29;2.15 13.24;];
-
-% n = 4
-% coords = [-24.48 16.97;-23.93 11.52;-22.36 -7.87;
-% -16.70 -10.30;-3.39 -2.34;1.74 -2.41;
-% 16.44 -6.14;20.99 -2.66;-0.83 18.29;2.15 13.24;
+% coords = [-76.07 -95.87;-13.18 -46.43;78.89 99.91;
+% 36.51 32.06;0.00 97.50;0.00 -97.50;
 % ];
 
 % Preparing the Euclidean distance matrix
@@ -72,7 +39,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 100 - 1;
 f = waitbar(0,'Please wait...');
 
 
@@ -116,188 +83,189 @@ for seed = 0:num_seeds
         lower_t = 0;
         t = upper_t;
 
-        upper_z = 10;
-        lower_z = -10;
+        upper_z = 20;
+        lower_z =0;
         z = upper_z;
 
         power_string = num2str(dec2bin(0,2*n));
-        P_hat = (get_power_values(power_string,max_power,min_power))';
+        P_hat = (get_power_values('1111111111',max_power,min_power))';
 
-        for j = 1:outer_iter
+%         for j = 1:outer_iter
 
-            %
-            % Power optimization - Successive convex approximation
-            %
-            fprintf('\n')
-            fprintf('l :')
+%             %
+%             % Power optimization - Successive convex approximation
+%             %
+%             fprintf('\n')
+%             fprintf('l :')
 
-            for l = 1:100
+%             for l = 1:100
 
-                fprintf(string(l))
+%                 fprintf('|')
 
-                try
+%                 try
 
-                    cvx_begin quiet
-                    cvx_solver Mosek
-                    variable P(2*n,1)
-                    % variable z
+%                     cvx_begin quiet
+%                     cvx_solver Mosek
+%                     variable P(2*n,1)
+%                     % variable z
 
-                    minimize 0
+%                     minimize 0
 
-                    subject to
+%                     subject to
 
-                        for u = 1:length(user_list)
+%                         for u = 1:length(user_list)
 
-                            % for n = 2
-                            -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
-                            -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
-                            -get_S(user_list(u),P_hat)...
-                            -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+%                             % for n = 2
+%                             30-log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
+%                             -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
+%                             -get_S(user_list(u),P_hat)...
+%                             -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
 
-                            % for n = 3
-                            % -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
-                            % -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
-                            % -get_S(user_list(u),P_hat)...
-                            % - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
+%                             % for n = 3
+%                             % -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3) + P(p_(user_list(u),1,4))*H_(user_list(u),1,4) + P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
+%                             % -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3) + P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
+%                             % -get_S(user_list(u),P_hat)...
+%                             % - (get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
 
-                        end
+%                         end
 
-                        for i = 1:length(user_list)
+%                         for i = 1:length(user_list)
 
-                            P(i) <= dbm2watt(max_power); 
-                            P(i) >= dbm2watt(min_power);
+%                             P(i) <= dbm2watt(max_power); 
+%                             P(i) >= dbm2watt(min_power);
 
-                        end
-                        norm((P-P_hat),1)<=1;
-                    cvx_end
+%                         end
+%                         norm((P-P_hat),1)<=1;
+%                     cvx_end
 
-                catch
-                    fprintf("skipped1")
-                    cvx_status
-                    seed;
-                    seed_flag = 1;
-                    break;
-                end
+%                 catch
+%                     fprintf("skipped1")
+%                     cvx_status
+%                     seed;
+%                     seed_flag = 1;
+%                     break;
+%                 end
 
-                if string(cvx_status) == string('Infeasible')
-                    lower_z = z;
-                elseif string(cvx_status) == string('Failed')
-                    fprintf('Failed')
-                    break;
-                else
-                    upper_z = z;
-                    if z < 0
-                        lower_z = (1.3)*z;
-                    else
-                        lower_z = (0.7)*z;
-                    end
-                    P_temp = P;
-                end
+%                 if string(cvx_status) == string('Infeasible')
+%                     lower_z = z;
+%                 elseif string(cvx_status) == string('Failed')
+%                     fprintf('Failed')
+%                     break;
+%                 else
+%                     upper_z = z;
+%                     if z < 0
+%                         lower_z = (1.3)*z;
+%                     else
+%                         lower_z = (0.7)*z;
+%                     end
+%                     P_temp = P;
+%                 end
 
-                z = (lower_z + upper_z)/2;
+%                 z = (lower_z + upper_z)/2;
+%                 fprintf(string(z))
 
-                if (upper_z - lower_z) < 0.1
-%                     fprintf('Reached power');
-                    z;
-                    break;
-                end
-                P;
-            end
-            P_hat = P_temp;
-            if seed_flag == 1
-                break;
-            end
+%                 if (upper_z - lower_z) < 0.1
+% %                     fprintf('Reached power');
+%                     z;
+%                     break;
+%                 end
+%                 P;
+%             end
+%             P_hat = P_temp
+%             if seed_flag == 1
+%                 break;
+%             end
 
-            fprintf(' z: ')
-            fprintf(string(z))
-
-
-            fprintf('\n')
-            fprintf('m :')
+%             fprintf(' z: ')
+%             fprintf(string(z))
 
 
-
-            % Reflection phase optimization
-            % Successive Convex Approximation (SCA)
-            %
-
-            for m = 1:100
+%             fprintf('\n')
+%             fprintf('m :')
 
 
-                fprintf(string(m))
-                fprintf('|')
-                try
-                    cvx_begin quiet
-                    % cvx_precision high
-                    cvx_solver Mosek
-                    variable X(L+1,L+1) complex semidefinite %symmetric
+
+%             % Reflection phase optimization
+%             % Successive Convex Approximation (SCA)
+%             %
+
+%             for m = 1:100
+
+
+%                 fprintf(string(m))
+%                 fprintf('|')
+%                 try
+%                     cvx_begin quiet
+%                     % cvx_precision high
+%                     cvx_solver Mosek
+%                     variable X(L+1,L+1) complex semidefinite %symmetric
     
-                    minimize 0
+%                     minimize 0
     
-                    subject to
+%                     subject to
 
-                        for u = 1:length(user_list)
+%                         for u = 1:length(user_list)
     
-                            % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                            -log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
-                        end
+%                             % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
+%                             -log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
+%                         end
     
-                        diag(X) == 1;
-                        % norm((X-W),1)<=2*exp(-outer_iter/2);
-                        % norm((X-W),1)<=2;
-                    cvx_end
+%                         diag(X) == 1;
+%                         % norm((X-W),1)<=2*exp(-outer_iter/2);
+%                         % norm((X-W),1)<=8;
+%                     cvx_end
 
-                    cvx_status;
+%                     cvx_status;
     
-                catch
-                    fprintf('skipped')
-                    cvx_status
-                    seed;
-                    seed_flag = 1;
-                    break;
-                end
+%                 catch
+%                     fprintf('skipped')
+%                     cvx_status
+%                     seed;
+%                     seed_flag = 1;
+%                     break;
+%                 end
 
-                if string(cvx_status) == string('Infeasible')
-                    lower_t = t;
+%                 if string(cvx_status) == string('Infeasible')
+%                     lower_t = t;
 
-                elseif string(cvx_status) == string('Failed')
-                    lower_t = t;
-                    fprintf('Failed')
-                    % seed_flag = 1;
-                    % break;
-
-
-                else
-                    upper_t = t;
-                    if t < 0
-                        lower_t = (1.3)*t;
-                    else
-                        lower_t = (0.7)*t;
-                    end
-
-                    temp_W = X;
-
-                end
-
-                t = (lower_t + upper_t)/2;
-
-                if (upper_t - lower_t) < 0.1
-%                     fprintf('reached IRS');
-                    t;
-                    break;
-                end
-
-            end
-            W = temp_W;
-
-            fprintf(' t: ')
-            fprintf(string(t))
-            if seed_flag == 1
-                break;
-            end
+%                 elseif string(cvx_status) == string('Failed')
+%                     lower_t = t;
+%                     fprintf('Failed')
+%                     % seed_flag = 1;
+%                     % break;
 
 
-        end % end of outer iteration
+%                 else
+%                     upper_t = t;
+%                     if t < 0
+%                         lower_t = (1.3)*t;
+%                     else
+%                         lower_t = (0.7)*t;
+%                     end
+
+%                     temp_W = X;
+
+%                 end
+
+%                 t = (lower_t + upper_t)/2;
+
+%                 if (upper_t - lower_t) < 0.1
+% %                     fprintf('reached IRS');
+%                     t;
+%                     break;
+%                 end
+
+%             end
+%             W = temp_W;
+
+%             fprintf(' t: ')
+%             fprintf(string(t))
+%             if seed_flag == 1
+%                 break;
+%             end
+
+
+%         end % end of outer iteration
         if seed_flag == 0
             [min_value, rate_list] = get_min_rate(P_hat);
         elseif seed_flag == 1
@@ -316,7 +284,7 @@ close(f)
 
 figure(1)
 plot(L_list,mean(min_master_list,'omitnan'));
-ylim([0 4])
+ylim([-1 4])
 xlabel('Number of elements')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -468,7 +436,7 @@ function grad_P = get_grad_P(user, P_hat,W)
             value = value + trace(leg_inf_stacks(:,:,counter,user_id)*W)/term_1;
         end
 
-        grad_list = [grad_list real(-value)];
+        grad_list = [grad_list real(value)];
     end
 
     grad_P = grad_list';
@@ -1029,11 +997,11 @@ function H = get_H(dti,dir,dtr,L,Lo,pl,rng_val)
 
 
     % LOS channel : Used for Users to IRS channels
-    Lo2 = 10^(2*-2.55012);
-    % Lo2 = 0.001;
+    % Lo2 = 10^(2*-2.55012);
+    Lo2 = 0.001;
     % NLOS channel : Used for direct path
-    Lo3 = 10^(2*-1.94515);
-    % Lo3 = 0.001;
+    % Lo3 = 10^(2*-1.94515);
+    Lo3 = 0.001;
 
     gti = get_ricean_channel(dti, 2.2, L, 5*rng_val);
     gir = get_ricean_channel(dir, 2.2, L, 5*rng_val+2); %2.2

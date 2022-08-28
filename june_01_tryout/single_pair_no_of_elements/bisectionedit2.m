@@ -19,7 +19,9 @@ n = 2;
 % ];
 
 % n = 2
-coords = [47.69 40.63;86.29 51.13;-87.39 9.21;-53.35 -11.79;0.00 97.50;0.00 -97.50];
+coords = [-58.73 31.21;-43.50 -5.12;75.43 12.95;
+45.59 38.35;-0.57 44.41;32.19 -47.27;
+];
 
 % Mixed up
 % coords = [21.15 3.84;-6.41 -2.51;-6.01 8.96;
@@ -72,7 +74,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 100 - 1;
 f = waitbar(0,'Please wait...');
 
 
@@ -149,7 +151,7 @@ for seed = 0:num_seeds
                         for u = 1:length(user_list)
 
                             % for n = 2
-                            -log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
+                            5-log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
                             -log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
                             -get_S(user_list(u),P_hat)...
                             -(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) <= z;
@@ -239,7 +241,7 @@ for seed = 0:num_seeds
                         for u = 1:length(user_list)
     
                             % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                            -log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
+                            5-log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) -log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)-get_S(user_list(u),P_hat) - real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) <= t;
                         end
     
                         diag(X) == 1;
