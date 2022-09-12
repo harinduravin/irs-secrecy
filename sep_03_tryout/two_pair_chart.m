@@ -214,17 +214,17 @@ for seed = 5:num_seeds
                     % cvx_precision high
                     cvx_solver Mosek
                     variable X(L+1,L+1) complex semidefinite %symmetric
-    
+
                     maximize 0
-    
+
                     subject to
 
                         for u = 1:length(user_list)
-    
+
                             % -log(real(trace(get_cvx_leg_inf(user_list(u),P_hat)*X))+sigma_ab+sigma_loop) -log(real(trace(get_cvx_eve_inf(user_list(u),P_hat)*X)) +sigma_c) - real(trace(get_grad_S(user_list(u),P_hat,W)*(X-W))) <= t;
-                            30+log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) +log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)+get_S(user_list(u),P_hat) + real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) >= t;
+                            30-(norm_nuc(X)/10)+log(real(trace(remove_small(get_cvx_leg_inf(user_list(u),P_hat))*X))+sigma_ab+sigma_loop) +log(real(trace(remove_small(get_cvx_eve_inf(user_list(u),P_hat))*X)) +sigma_c)+get_S(user_list(u),P_hat) + real(trace(remove_small(get_grad_S(user_list(u),P_hat,W))*(X-remove_small(W)))) >= t;
                         end
-    
+
                         diag(X) == 1;
                         % norm((X-W),1)<=2*exp(-outer_iter/2);
                         % norm((X-W),1)<=8;
@@ -237,15 +237,18 @@ for seed = 5:num_seeds
                     cvx_status
                     seed;
                     seed_flag = 1;
+                    temp_W = zeros(size(X));
                     break;
                 end
 
                 if string(cvx_status) == string('Infeasible')
                     upper_t = t;
 
+
                 elseif string(cvx_status) == string('Failed')
                     upper_t = t;
                     fprintf('F')
+
 
                 else
                     lower_t = t;
@@ -287,6 +290,33 @@ for seed = 5:num_seeds
 
         end % end of outer iteration
         toc
+
+        % Gaussian randomization
+        % [U Si V] = svd(W);
+        % w_s = U*sqrt(Si)*r_vals;
+
+        % gaussian_ratelist = [];
+        % for x = 1:numSamples
+        %     w_rand = w_s(:,x)/w_s(L+1,x);
+        %     w_rand = w_rand./abs(w_rand);
+        %     W_random = w_rand*w_rand';
+        %     [g_min_rate,~] = get_min_rate(P_hat,W_random);
+        %     gaussian_ratelist = [gaussian_ratelist g_min_rate];
+        % end
+        % [max_min_val,I] = max(gaussian_ratelist);
+
+        % w0 = w_s(:,I)/w_s(L+1,I);
+        % w0 = w0./abs(w0);
+        % W = w0*w0';
+        % End of gaussian randomization
+
+        % Eigen decomposition
+        [U Si V] = svd(W);
+        w0 = U(:,1)/U(L+1,1);
+        w0 = w0./abs(w0);
+        W = w0*w0';        
+        % End of Eigen decomposition
+
         if seed_flag == 0
             [min_value, rate_list, min_ind] = get_min_rate(P_hat);
             min_inf = get_interference(min_ind, P_hat)
@@ -317,7 +347,7 @@ mean_user_rates = mean(all_master_list,3);
 
 close(f)
 
-% save(string(2)+'_pairs_'+string(35)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
+save(string(2)+'_pairs_'+string(35)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
 
 
 figure(1)
@@ -372,7 +402,11 @@ function S = get_S(user,P_hat)
     term_1 = real(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = real(trace(eves_inf_term2*W) + sigma_c);
 
-    S = -log(term_1) -log(term_2);
+    % Minimizing the rank
+    rho = 5;
+    max_eig = max(eig(W))/(2*rho);
+
+    S = -log(term_1) -log(term_2) + max_eig;
 
 end
 
@@ -543,7 +577,15 @@ function grad_S = get_grad_S(user, power_list, W)
     term_1 = leg_inf_term1/(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = eves_inf_term2/(trace(eves_inf_term2*W) + sigma_c);
 
-    grad_S = -(term_1+term_2);
+    % Minimizing the rank
+    rho = 5;
+    [V,D] = eig(W);
+    [maxValue,index] = max(diag(D));  %# The maximum eigenvalue and its index
+    maxVector = V(:,index);           %# The associated eigenvector in V
+
+    rank_enforce = (maxVector*maxVector')/(2*rho);
+
+    grad_S = -(term_1+term_2-rank_enforce);
     
 end
 

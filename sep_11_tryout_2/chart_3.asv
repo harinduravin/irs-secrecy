@@ -1,22 +1,18 @@
-load("1 pair/1_pairs_20_seeds_1_trial.mat");
+load("1 pair/1_pairs_10_seeds_1_trial.mat");
 one_min_master_list = min_master_list;
 
-load("2 pairs/2_pairs_5_seeds_1_trial.mat");
+load("2 pairs/2_pairs_10_seeds_1_trial.mat");
 two_min_master_list = min_master_list;
-load("2 pairs/2_pairs_35_seeds_2_trial.mat");
-two_min_master_list = cat(1,two_min_master_list,min_master_list);
 
-load("3 pairs/3_pairs_20_seeds_1_trial.mat");
+load("3 pairs/3_pairs_10_seeds_1_trial.mat");
 three_min_master_list = min_master_list;
-load("3 pairs/3_pairs_20_seeds_2_trial.mat");
-three_min_master_list = cat(1,three_min_master_list,min_master_list);
 
-load("4 pair/4_pairs_5_seeds_1_trial.mat");
+
+load("4 pair/4_pairs_10_seeds_1_trial.mat");
 four_min_master_list = min_master_list; 
-load("4 pair/4_pairs_20_seeds_2_trial.mat");
-four_min_master_list = cat(1,four_min_master_list,min_master_list);
 
-load("5 pairs/5_pairs_20_seeds_1_trial.mat");
+
+load("5 pairs/5_pairs_10_seeds_1_trial.mat");
 five_min_master_list = min_master_list; 
 
 L_list = 0:5:40;
@@ -44,4 +40,4 @@ lgd.Position = [0.6656    0.3651    0.2245    0.2429];
 grid on;
 title({'Variation of Minimum secrecy rate with',' Number of IRS elements'})
 
-print -depsc2 chart_100_3.eps
+% print -depsc2 chart_100_3.eps

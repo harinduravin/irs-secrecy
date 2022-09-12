@@ -53,4 +53,4 @@ lgd.FontName = 'Times';
 lgd.Position = [0.6656    0.3651    0.2245    0.2429];
 grid on;
 
-print -depsc2 chart_100_3.eps
+% print -depsc2 chart_100_3.eps

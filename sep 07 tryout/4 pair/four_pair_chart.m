@@ -1,20 +1,21 @@
 
 % Initializing number of pairs
 global n;
-n = 2;
+n = 4;
 
 % Position of all the nodes
-% n = 2
+% n = 4
 
-coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
--88.72 -78.33;
-0.00 97.50;0.00 0.00];
+coords = [20.54 -23.17;-13.80 -2.65;-73.82 57.78;
+-98.51 26.31;-63.94 -71.43;-40.62 -38.93;
+24.58 52.39;61.41 68.00;0.00 97.50;0.00 -97.50;
+];
 
 % Preparing the Euclidean distance matrix
 global dist;
 dist = sqDistance(coords, coords);
 
-L_list = 0:5:10;
+L_list = 0:5:40;
 L_list(1) = 1;
 
 % Residual interference and noise values
@@ -44,12 +45,12 @@ all_master_list = [];
 min_inf_master_list = [];
 min_leaked_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 15 - 1;
 f = waitbar(0,'Please wait...');
 
 
 global seed;
-for seed = 5:num_seeds
+for seed = 0:num_seeds
 
     seed
     seed_flag = 0;
@@ -128,11 +129,11 @@ for seed = 5:num_seeds
 
                         for u = 1:length(user_list)
 
-                            % for n = 2
-                            log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
-                            +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
-                            +get_S(user_list(u),P_hat)...
-                            +(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) >= z;
+                        % for n = 4
+                        log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3)+ P(p_(user_list(u),1,4))*H_(user_list(u),1,4)+ P(p_(user_list(u),1,5))*H_(user_list(u),1,5) + P(p_(user_list(u),1,6))*H_(user_list(u),1,6)+ P(p_(user_list(u),1,7))*H_(user_list(u),1,7))...
+                        +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3)+ P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5) + P(p_(user_list(u),2,6))*H_(user_list(u),2,6)+ P(p_(user_list(u),2,7))*H_(user_list(u),2,7))...
+                        +get_S(user_list(u),P_hat)...
+                        +(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) >= z;
 
                         end
 
@@ -317,7 +318,7 @@ mean_user_rates = mean(all_master_list,3);
 
 close(f)
 
-% save(string(2)+'_pairs_'+string(35)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
+save(string(4)+'_pairs_'+string(15)+'_seeds_'+string(1)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
 
 
 figure(1)

@@ -1,20 +1,20 @@
 
 % Initializing number of pairs
 global n;
-n = 2;
+n = 3;
 
 % Position of all the nodes
-% n = 2
+% n = 3
 
-coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
--88.72 -78.33;
-0.00 97.50;0.00 0.00];
+coords = [-51.19 61.90;-11.20 61.29; 50.13 76.03;31.56 40.60; 77.36 35.80;89.39 73.95; 
+0.00 97.50;0.00 85.00];
+
 
 % Preparing the Euclidean distance matrix
 global dist;
 dist = sqDistance(coords, coords);
 
-L_list = 0:5:10;
+L_list = 0:5:40;
 L_list(1) = 1;
 
 % Residual interference and noise values
@@ -44,12 +44,12 @@ all_master_list = [];
 min_inf_master_list = [];
 min_leaked_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 10 - 1;
 f = waitbar(0,'Please wait...');
 
 
 global seed;
-for seed = 5:num_seeds
+for seed = 0:num_seeds
 
     seed
     seed_flag = 0;
@@ -63,7 +63,7 @@ for seed = 5:num_seeds
     % Number of elements in the IRS
     global L;
     for L = L_list
-        
+
         fprintf('\n')
         fprintf(strcat("starting with ",string(L), " IRS elements."))
         fprintf('\n')
@@ -95,7 +95,7 @@ for seed = 5:num_seeds
         lower_t = 0;
         t = upper_t;
 
-        upper_z = 200;
+        upper_z = 500;
         lower_z =0;
         z = upper_z;
 
@@ -121,30 +121,30 @@ for seed = 5:num_seeds
                     cvx_solver Mosek
                     variable P(2*n,1)
                     % variable z
-
+    
                     maximize 0
-
+    
                     subject to
-
+    
                         for u = 1:length(user_list)
-
-                            % for n = 2
-                            log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
-                            +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
+    
+                            % for n = 3
+                            log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3)+ P(p_(user_list(u),1,4))*H_(user_list(u),1,4)+ P(p_(user_list(u),1,5))*H_(user_list(u),1,5))...
+                            +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3)+ P(p_(user_list(u),2,4))*H_(user_list(u),2,4)+ P(p_(user_list(u),2,5))*H_(user_list(u),2,5))...
                             +get_S(user_list(u),P_hat)...
                             +(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) >= z;
-
+    
                         end
-
+    
                         for i = 1:length(user_list)
-
+    
                             P(i) <= dbm2watt(max_power); 
                             P(i) >= dbm2watt(min_power);
-
+    
                         end
                         norm((P-P_hat),1)<=1;
                     cvx_end
-
+    
                 catch
                     fprintf("skipped1")
                     cvx_status
@@ -231,7 +231,7 @@ for seed = 5:num_seeds
                     cvx_end
 
                     cvx_status;
-    
+
                 catch
                     fprintf('skipped')
                     cvx_status
@@ -317,7 +317,7 @@ mean_user_rates = mean(all_master_list,3);
 
 close(f)
 
-% save(string(2)+'_pairs_'+string(35)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
+save(string(3)+'_pairs_'+string(10)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
 
 
 figure(1)
@@ -325,10 +325,12 @@ plot(L_list,mean(min_master_list,'omitnan'),'DisplayName','Minimum secrecy Rate'
 hold on;
 
 plot(L_list,mean(min_leaked_master_list,'omitnan'),'DisplayName','Leaked information rate');
-% plot(L_list,mean_user_rates(:,1)','DisplayName','A1');
-% plot(L_list,mean_user_rates(:,2)','DisplayName','B1');
-% plot(L_list,mean_user_rates(:,3)','DisplayName','A2');
-% plot(L_list,mean_user_rates(:,4)','DisplayName','B2');
+plot(L_list,mean_user_rates(:,1)','DisplayName','A1');
+plot(L_list,mean_user_rates(:,2)','DisplayName','B1');
+plot(L_list,mean_user_rates(:,3)','DisplayName','A2');
+plot(L_list,mean_user_rates(:,4)','DisplayName','B2');
+plot(L_list,mean_user_rates(:,5)','DisplayName','A3');
+plot(L_list,mean_user_rates(:,6)','DisplayName','B3');
 
 % ylim([-1 5])
 xlabel('Number of elements')

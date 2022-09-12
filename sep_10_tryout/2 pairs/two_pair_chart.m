@@ -6,15 +6,16 @@ n = 2;
 % Position of all the nodes
 % n = 2
 
-coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
--88.72 -78.33;
-0.00 97.50;0.00 0.00];
+coords = [50.13 76.03;31.56 40.60;-85.14 -38.49; 
+-88.72 -78.33;0.00 97.50;0.00 80.00; 
+]; 
+
 
 % Preparing the Euclidean distance matrix
 global dist;
 dist = sqDistance(coords, coords);
 
-L_list = 0:5:10;
+L_list = 0:5:40;
 L_list(1) = 1;
 
 % Residual interference and noise values
@@ -44,12 +45,12 @@ all_master_list = [];
 min_inf_master_list = [];
 min_leaked_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 15 - 1;
 f = waitbar(0,'Please wait...');
 
 
 global seed;
-for seed = 5:num_seeds
+for seed = 0:num_seeds
 
     seed
     seed_flag = 0;
@@ -95,7 +96,7 @@ for seed = 5:num_seeds
         lower_t = 0;
         t = upper_t;
 
-        upper_z = 200;
+        upper_z = 500;
         lower_z =0;
         z = upper_z;
 
@@ -264,7 +265,7 @@ for seed = 5:num_seeds
                 if (j<4)
                     delta = 0.8;
                 elseif (j<7)
-                    delta = 0.3;
+                    delta = 0.01;
                 else
                     delta = 0.01;
                 end
@@ -276,7 +277,7 @@ for seed = 5:num_seeds
 
 
             end
-            upper_t = (1.3)*t;
+            upper_t = (1.4)*t;
             W = temp_W;
 
             fprintf(' t: ')
@@ -317,7 +318,7 @@ mean_user_rates = mean(all_master_list,3);
 
 close(f)
 
-% save(string(2)+'_pairs_'+string(35)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
+save(string(2)+'_pairs_'+string(15)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
 
 
 figure(1)
@@ -325,10 +326,10 @@ plot(L_list,mean(min_master_list,'omitnan'),'DisplayName','Minimum secrecy Rate'
 hold on;
 
 plot(L_list,mean(min_leaked_master_list,'omitnan'),'DisplayName','Leaked information rate');
-% plot(L_list,mean_user_rates(:,1)','DisplayName','A1');
-% plot(L_list,mean_user_rates(:,2)','DisplayName','B1');
-% plot(L_list,mean_user_rates(:,3)','DisplayName','A2');
-% plot(L_list,mean_user_rates(:,4)','DisplayName','B2');
+plot(L_list,mean_user_rates(:,1)','DisplayName','A1');
+plot(L_list,mean_user_rates(:,2)','DisplayName','B1');
+plot(L_list,mean_user_rates(:,3)','DisplayName','A2');
+plot(L_list,mean_user_rates(:,4)','DisplayName','B2');
 
 % ylim([-1 5])
 xlabel('Number of elements')

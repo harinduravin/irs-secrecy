@@ -72,10 +72,10 @@ coords = [-51.19 61.90;-11.20 61.29; 50.13 76.03;31.56 40.60; 77.36 35.80;89.39 
 coords = [-51.19 61.90;-11.20 61.29; 50.13 76.03;31.56 40.60; 77.36 35.80;89.39 73.95; 
 -60.15 7.59;-23.08 -7.43;0.00 97.50;0.00 85.00]; 
 coords = [-51.19 61.90;-11.20 61.29; 50.13 76.03;31.56 40.60; 77.36 35.80;89.39 73.95; 
--60.15 7.59;-23.08 -7.43; -85.14 -38.49;-88.72 -78.33; 0.00 97.50;0.00 85.00]; 
+-60.15 7.59;-23.08 -7.43; -85.14 -38.49;-88.72 -78.33; 0.00 97.50;0.00 85.00;0.00 -97.50]; 
 
 coords_shape = size(coords);
-n = (coords_shape(1) -2)/2;
+n = (coords_shape(1) -3)/2;
 
 a=coords(:,1);
 b=coords(:,2);
@@ -85,7 +85,8 @@ for i = 1:n
     c{end+1} = 'B'+string(i);
 end
 c{end+1} = 'IRS';
-c{end+1} = 'E';
+c{end+1} = 'E2';
+c{end+1} = 'E1';
 
 sz = 70;
 leg_a = a(1:2*n);
@@ -97,7 +98,8 @@ scatter(leg_a(2:2:end),leg_b(2:2:end),sz,'o','MarkerFaceColor',[1 0 0],'MarkerEd
 hold on;
 scatter(leg_a(1:2:end),leg_b(1:2:end),sz,'o','MarkerFaceColor',[0 0 1],'MarkerEdgeColor',[1 1 1],'DisplayName','Group B')
 scatter(a(2*n+1),b(2*n+1),sz,'s','MarkerFaceColor',[0.3 0.5 0.8],'MarkerEdgeColor',[1 1 1],'DisplayName','IRS')
-scatter(a(2*n+2),b(2*n+2),sz,'p','MarkerFaceColor',[0.8 0.5 0.3],'MarkerEdgeColor',[0 0.5 0],'DisplayName' ,'Eavesdropper')
+scatter(a(2*n+2),b(2*n+2),sz,'p','MarkerFaceColor',[0.8 0.5 0.3],'MarkerEdgeColor',[0 0.5 0],'DisplayName' ,'E1 - Position')
+scatter(a(2*n+3),b(2*n+3),sz,'p','MarkerFaceColor',[0.8 0.5 0.3],'MarkerEdgeColor',[0 0.5 0],'DisplayName' ,'E2 - Position')
 labelpoints(a,b,c,'N',0.2,'FontSize',10,'FontName','Times')
 ax = gca;
 ax.FontSize = 12;

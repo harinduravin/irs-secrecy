@@ -1,20 +1,17 @@
-
 % Initializing number of pairs
 global n;
-n = 2;
+n = 1;
 
 % Position of all the nodes
-% n = 2
+% n = 1
 
-coords = [50.13 76.03;31.56 40.60;-85.14 -38.49;
--88.72 -78.33;
-0.00 97.50;0.00 0.00];
+coords = [-51.19 61.90;-11.20 61.29;0.00 97.50;0.00 85.00]; 
 
 % Preparing the Euclidean distance matrix
 global dist;
 dist = sqDistance(coords, coords);
 
-L_list = 0:5:10;
+L_list = 0:5:40;
 L_list(1) = 1;
 
 % Residual interference and noise values
@@ -41,15 +38,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 min_master_list = [];
 all_master_list = [];
-min_inf_master_list = [];
 min_leaked_master_list = [];
 
-num_seeds = 20 - 1;
+num_seeds = 15 - 1;
 f = waitbar(0,'Please wait...');
 
 
 global seed;
-for seed = 5:num_seeds
+for seed = 0:num_seeds
 
     seed
     seed_flag = 0;
@@ -57,7 +53,6 @@ for seed = 5:num_seeds
     waitbar(seed/num_seeds,f,'Simulating...');
     min_list = [];
     all_list = [];
-    min_inf_list = [];
     min_leaked_list = [];
 
     % Number of elements in the IRS
@@ -91,11 +86,11 @@ for seed = 5:num_seeds
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         outer_iter = 10;
 
-        upper_t = 100;
+        upper_t = 60;
         lower_t = 0;
         t = upper_t;
 
-        upper_z = 200;
+        upper_z = 50;
         lower_z =0;
         z = upper_z;
 
@@ -128,11 +123,11 @@ for seed = 5:num_seeds
 
                         for u = 1:length(user_list)
 
-                            % for n = 2
-                            log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*H_(user_list(u),1,1)+ P(p_(user_list(u),1,2))*H_(user_list(u),1,2) + P(p_(user_list(u),1,3))*H_(user_list(u),1,3))...
-                            +log(sigma_c + P(p_(user_list(u),2,1))*H_(user_list(u),2,1)+ P(p_(user_list(u),2,2))*H_(user_list(u),2,2) + P(p_(user_list(u),2,3))*H_(user_list(u),2,3))...
-                            +get_S(user_list(u),P_hat)...
-                            +(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) >= z;
+                        % for n = 1
+                        log(sigma_ab + sigma_loop + P(p_(user_list(u),1,1))*remove_small(H_(user_list(u),1,1)))...
+                        +log(sigma_c + P(p_(user_list(u),2,1))*remove_small(H_(user_list(u),2,1)))...
+                        +get_S(user_list(u),P_hat)...
+                        +(get_grad_P(user_list(u),P_hat,W))'*(P-P_hat) >= z;
 
                         end
 
@@ -289,25 +284,21 @@ for seed = 5:num_seeds
         toc
         if seed_flag == 0
             [min_value, rate_list, min_ind] = get_min_rate(P_hat);
-            min_inf = get_interference(min_ind, P_hat)
             min_leaked = get_leaked_info_rate(min_ind, P_hat)
 
         elseif seed_flag == 1
             min_value = nan;
-            min_inf = nan;
             min_leaked = nan;
             seed_flag = 0;
         end
 
         min_list = [min_list, min_value];
         all_list = cat(1,all_list, rate_list);
-        min_inf_list = [min_inf_list, min_inf];
         min_leaked_list = [min_leaked_list, min_leaked];
 
     end % end of L iteration
     min_master_list = cat(1, min_master_list, min_list);
     all_master_list = cat(3, all_master_list, all_list);
-    min_inf_master_list = cat(1, min_inf_master_list, min_inf_list);
     min_leaked_master_list = cat(1, min_leaked_master_list, min_leaked_list);
 
 end % end of random seed iteration
@@ -317,8 +308,7 @@ mean_user_rates = mean(all_master_list,3);
 
 close(f)
 
-% save(string(2)+'_pairs_'+string(35)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list','min_inf_master_list')
-
+save(string(1)+'_pairs_'+string(10)+'_seeds_'+string(2)+'_trial.mat','L_list','min_master_list','min_leaked_master_list')
 
 figure(1)
 plot(L_list,mean(min_master_list,'omitnan'),'DisplayName','Minimum secrecy Rate');
@@ -334,15 +324,9 @@ plot(L_list,mean(min_leaked_master_list,'omitnan'),'DisplayName','Leaked informa
 xlabel('Number of elements')
 ylabel('Minimum secrecy Rate(bits/sec/Hz)')
 legend
-
-figure(2)
-semilogy(L_list,mean(min_inf_master_list,'omitnan'),'DisplayName','Interference');
-xlabel('Number of elements')
-ylabel('Interference Power (W)')
-legend
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 function S = get_S(user,P_hat)
     % Calculation of the S term in the constraint functions. Calculating this value is important
@@ -351,6 +335,7 @@ function S = get_S(user,P_hat)
     %
 
     global W;
+    global n;
 
     user = char(user);
     user_id = get_index(user);
@@ -364,10 +349,14 @@ function S = get_S(user,P_hat)
     global eves_stack;
 
     eves_power_all = filter_power_values(char(user), P_hat,"eves_inf_all");
-    leg_power = filter_power_values(char(user), P_hat,"leg_inf");
-
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
+
+    if n~=1
+        leg_power = filter_power_values(char(user), P_hat,"leg_inf");
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    else
+        leg_inf_term1 = 0;
+    end
 
     term_1 = real(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = real(trace(eves_inf_term2*W) + sigma_c);
@@ -470,15 +459,19 @@ function grad_P = get_grad_P(user, P_hat,W)
     global user_list;
     global leg_inf_stacks;
     global eves_stack;
+    global n;
 
     eves_power_all = filter_power_values(char(user), P_hat,"eves_inf_all");
-    leg_power = filter_power_values(char(user), P_hat,"leg_inf");
 
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
 
-    term_1 = (trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = (trace(eves_inf_term2*W) + sigma_c);
+
+    if n ~= 1
+        leg_power = filter_power_values(char(user), P_hat,"leg_inf");
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+        term_1 = (trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
+    end
 
     grad_list = [];
     counter = 0;
@@ -533,12 +526,18 @@ function grad_S = get_grad_S(user, power_list, W)
 
     global leg_inf_stacks;
     global eves_stack;
+    global n;
 
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
-    leg_power = filter_power_values(char(user), power_list,"leg_inf");
 
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
+
+    if n~=1
+        leg_power = filter_power_values(char(user), power_list,"leg_inf");
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    else
+        leg_inf_term1 = 0;
+    end
 
     term_1 = leg_inf_term1/(trace(leg_inf_term1*W) + sigma_ab + sigma_loop);
     term_2 = eves_inf_term2/(trace(eves_inf_term2*W) + sigma_c);
@@ -625,6 +624,7 @@ function rate = get_rate(user, power_list)
     user_id = get_index(user);
 
     global W;
+    global n;
     global leg_inf_with_opp_stacks;
     global eves_inf_with_self_stacks;
     global leg_inf_stacks;
@@ -637,7 +637,12 @@ function rate = get_rate(user, power_list)
     eves_power_all = filter_power_values(char(user), power_list,"eves_inf_all");
     leg_power = filter_power_values(char(user), power_list,"leg_inf");
 
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    if n~=1
+        leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
+    else
+        leg_inf_term1 = 0;
+    end
+
     leg_inf_term2 = dot_product(leg_power_with_opp', leg_inf_with_opp_stacks(:,:,:,user_id));
     eves_inf_term1 = dot_product(eves_power_with_self',eves_inf_with_self_stacks(:,:,:,user_id));
     eves_inf_term2 = dot_product(eves_power_all',eves_stack);
@@ -653,27 +658,6 @@ function rate = get_rate(user, power_list)
 
 end
 
-function leg_inf = get_interference(user_id, power_list)
-    % Returns the interference suffered by a given user, at a given power setting.
-    % This requires retrieving the channels stacks stored after generation.
-    % The dot_product function is used to obtain the interference terms.
-    %
-
-    global W;
-    global leg_inf_stacks;
-    global user_list;
-
-    user = user_list(user_id);
-
-    % Choose filter modes from ["leg_inf" "eves_inf_with_self" "leg_inf_with_opp" "eves_inf_all"]
-    % Retrieving suitable power arrays for dot_product function
-    leg_power = filter_power_values(char(user), power_list,"leg_inf");
-
-    leg_inf_term1 = dot_product(leg_power', leg_inf_stacks(:,:,:,user_id));
-
-    leg_inf= real(trace(leg_inf_term1*W));
-
-end
 
 function leaked_rate = get_leaked_info_rate(user_id, power_list)
     % Returns the interference suffered by a given user, at a given power setting.
@@ -699,7 +683,6 @@ function leaked_rate = get_leaked_info_rate(user_id, power_list)
     leaked_rate = real(log2(1 + trace((eves_inf_term2 - eves_inf_term1)*W)/(trace(eves_inf_term1*W) + sigma_c)));
 
 end
-
 
 % TODO test this function properly.
 function y = dot_product(power, channel_cube)
