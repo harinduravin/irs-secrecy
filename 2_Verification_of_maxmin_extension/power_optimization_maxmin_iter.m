@@ -1,0 +1,119 @@
+function [Pa, Pb, Pa2, Pb2] = power_optimization_maxmin_iter(Pmin, Pmax, Pa,Pb,Pa2,Pb2,Hab,Hac,Hbc,Ha2b2,Ha2c,Hb2c,Ha2a,Ha2b,Hb2a,Hb2b,sigma_ab,sigma_loop,sigma_c,w_hat,iter)
+    % fprintf('\n');
+    for r = 1:iter
+        fprintf([num2str(r)]);
+        y1 = sqrt(Pb*abs(w_hat'*Hab)^2)/(Pa2*abs(w_hat'*Ha2a)^2 + Pb2*abs(w_hat'*Hb2a)^2 + sigma_ab + sigma_loop);
+        y2 = sqrt(Pa*abs(w_hat'*Hab)^2)/(Pa2*abs(w_hat'*Ha2b)^2 + Pb2*abs(w_hat'*Hb2b)^2 + sigma_ab + sigma_loop);
+        y3 = sqrt(Pa2*abs(w_hat'*Ha2c)^2+Pb2*abs(w_hat'*Hb2c)^2+sigma_c)/(Pa*abs(w_hat'*Hac)^2 + Pb*abs(w_hat'*Hbc)^2 + Pa2*abs(w_hat'*Ha2c)^2+Pb2*abs(w_hat'*Hb2c)^2+sigma_c);
+        y4 = sqrt(Pb2*abs(w_hat'*Ha2b2)^2)/(Pa*abs(w_hat'*Ha2a)^2 + Pb*abs(w_hat'*Ha2b)^2 + sigma_ab + sigma_loop);
+        y5 = sqrt(Pa2*abs(w_hat'*Ha2b2)^2)/(Pa*abs(w_hat'*Hb2a)^2 + Pb*abs(w_hat'*Hb2b)^2 + sigma_ab + sigma_loop);
+        y6 = sqrt(Pa*abs(w_hat'*Hac)^2+Pb*abs(w_hat'*Hbc)^2+sigma_c)/(Pa2*abs(w_hat'*Ha2c)^2 + Pb2*abs(w_hat'*Hb2c)^2 + Pa*abs(w_hat'*Hac)^2+Pb*abs(w_hat'*Hbc)^2+sigma_c);     
+    
+        cvx_begin quiet
+            variable Pa
+            variable Pb
+            variable Pa2
+            variable Pb2
+            variable t
+    
+    
+            maximize t
+    
+            subject to
+    
+            log(10000+2*y1*sqrt(100000000*Pb*abs(w_hat'*Hab)^2)...
+            -(10000*Pa2*abs(w_hat'*Ha2a)^2 + 10000*Pb2*abs(w_hat'*Hb2a)^2 + 10000*sigma_ab + 10000*sigma_loop)*y1^2)...
+            + log(10000+2*y2*sqrt(100000000*Pa*abs(w_hat'*Hab)^2)...
+            -(10000*Pa2*abs(w_hat'*Ha2b)^2 + 10000*Pb2*abs(w_hat'*Hb2b)^2 + 10000*sigma_ab + 10000*sigma_loop)*y2^2)...
+            + log(2*y3*sqrt(100000000*Pa2*abs(w_hat'*Ha2c)^2+100000000*Pb2*abs(w_hat'*Hb2c)^2+100000000*sigma_c)...
+            -(10000*Pa*abs(w_hat'*Hac)^2 + 10000*Pb*abs(w_hat'*Hbc)^2 + 10000*Pa2*abs(w_hat'*Ha2c)^2+ 10000*Pb2*abs(w_hat'*Hb2c)^2+10000*sigma_c)*y3^2) >= t
+    
+            log(10000+2*y4*sqrt(100000000*Pb2*abs(w_hat'*Ha2b2)^2)...
+            -(10000*Pa*abs(w_hat'*Ha2a)^2 + 10000*Pb*abs(w_hat'*Ha2b)^2 + 10000*sigma_ab + 10000*sigma_loop)*y4^2)...
+            + log(10000+2*y5*sqrt(100000000*Pa2*abs(w_hat'*Ha2b2)^2)...
+            -(10000*Pa*abs(w_hat'*Hb2a)^2 + 10000*Pb*abs(w_hat'*Hb2b)^2 + 10000*sigma_ab + 10000*sigma_loop)*y5^2)...
+            + log(2*y6*sqrt(100000000*Pa*abs(w_hat'*Hac)^2+ 100000000*Pb*abs(w_hat'*Hbc)^2+sigma_c)...
+            -(10000*Pa2*abs(w_hat'*Ha2c)^2 + 10000*Pb2*abs(w_hat'*Hb2c)^2 + 10000*Pa*abs(w_hat'*Hac)^2+ 10000*Pb*abs(w_hat'*Hbc)^2 + 10000*sigma_c)*y6^2) >= t
+    
+            Pa >= Pmin
+            Pb >= Pmin 
+            Pa2 >= Pmin
+            Pb2 >= Pmin 
+            Pb <= Pmax
+            Pa <= Pmax
+            Pb2 <= Pmax
+            Pa2 <= Pmax
+        cvx_end
+
+    end
+
+    % Rp1 = Rp1/log(2);
+    % Rp2 = Rp2/log(2);    
+end
+
+% maximize (log(10000*sigma_ab + 10000*sigma_loop + 10000*Pa*abs(w_hat'*Hab)^2)...
+% + log(2*y*sqrt(100000000*sigma_ab + 100000000*sigma_loop + 100000000*Pb*abs(w_hat'*Hab)^2)...
+% -(10000*Pa*abs(w_hat'*Hac)^2+10000*Pb*abs(w_hat'*Hbc)^2+10000*sigma_c)*y^2))
+
+
+% Rp1 = log(1+2*y1*sqrt(Pb*abs(w_hat'*Hab)^2)...
+% -(Pa2*abs(w_hat'*Ha2a)^2 + Pb2*abs(w_hat'*Hb2a)^2 + sigma_ab + sigma_loop)*y1^2)...
+% + log(1+2*y2*sqrt(Pa*abs(w_hat'*Hab)^2)...
+% -(Pa2*abs(w_hat'*Ha2b)^2 + Pb2*abs(w_hat'*Hb2b)^2 + sigma_ab + sigma_loop)*y2^2)...
+% + log(2*y3*sqrt(Pa2*abs(w_hat'*Ha2c)^2+Pb2*abs(w_hat'*Hb2c)^2+sigma_c)...
+% -(Pa*abs(w_hat'*Hac)^2 + Pb*abs(w_hat'*Hbc)^2 + Pa2*abs(w_hat'*Ha2c)^2+Pb2*abs(w_hat'*Hb2c)^2+sigma_c)*y3^2);
+% 
+% Rp2 = log(1+2*y4*sqrt(Pb2*abs(w_hat'*Ha2b2)^2)...
+% -(Pa*abs(w_hat'*Ha2a)^2 + Pb*abs(w_hat'*Ha2b)^2 + sigma_ab + sigma_loop)*y4^2)...
+% + log(1+2*y5*sqrt(Pa2*abs(w_hat'*Ha2b2)^2)...
+% -(Pa*abs(w_hat'*Hb2a)^2 + Pb*abs(w_hat'*Hb2b)^2 + sigma_ab + sigma_loop)*y5^2)...
+% + log(2*y6*sqrt(Pa*abs(w_hat'*Hac)^2+Pb*abs(w_hat'*Hbc)^2+sigma_c)...
+% -(Pa2*abs(w_hat'*Ha2c)^2 + Pb2*abs(w_hat'*Hb2c)^2 + Pa*abs(w_hat'*Hac)^2+Pb*abs(w_hat'*Hbc)^2+sigma_c)*y6^2);
+
+% function [Pa Pb Pa2 Pb2] = power_optimization_iter(y,Pmin,Pmax,Hab,Hac,Hbc,Ha2b2,Ha2c,Hb2c,Ha2a,Ha2b,Hb2a,Hb2b,sigma_ab,sigma_loop,sigma_c,w_hat)
+%     % optimal beamformer SDP solution
+%     % y = 1;
+%     % Hab = Hab * 1000;
+%     % Hbc = Hbc * 1000;
+%     % Hac = Hac * 1000;
+%     cvx_begin quiet
+%         variable Pa
+%         variable Pb
+%         variable Pa2
+%         variable Pb2
+%         maximize (log(10000*sigma_ab + 10000*sigma_loop + 10000*Pa*abs(w_hat'*Hab)^2)...
+%         + log(2*y*sqrt(100000000*sigma_ab + 100000000*sigma_loop + 100000000*Pb*abs(w_hat'*Hab)^2)...
+%         -(10000*Pa*abs(w_hat'*Hac)^2+10000*Pb*abs(w_hat'*Hbc)^2+10000*sigma_c)*y^2))
+% 
+%         maximize (log(sigma_ab + sigma_loop + Pa*abs(w_hat'*Hab)^2)...
+%         + log(2*y*sqrt(sigma_ab + sigma_loop + Pb*abs(w_hat'*Hab)^2)...
+%         -(Pa2*abs(w_hat'*Ha2a)^2+Pb2*abs(w_hat'*Hb2a)^2+sigma_c)*y^2))
+% 
+%         maximize (log(1+2*y1*sqrt(Pb*abs(w_hat'*Hab)^2)...
+%         -(Pa2*abs(w_hat'*Ha2a)^2 + Pb2*abs(w_hat'*Hb2a)^2 + sigma_ab + sigma_loop)*y1^2)...
+%         + log(1+2*y2*sqrt(Pa*abs(w_hat'*Hab)^2)...
+%         -(Pa2*abs(w_hat'*Ha2b)^2 + Pb2*abs(w_hat'*Hb2b)^2 + sigma_ab + sigma_loop)*y2^2)...
+%         + log(2*y3*sqrt(Pa2*abs(w_hat'*Ha2c)^2+Pb2*abs(w_hat'*Hb2c)^2+sigma_c)...
+%         -(Pa*abs(w_hat'*Hac)^2 + Pb*abs(w_hat'*Hbc)^2 + Pa2*abs(w_hat'*Ha2c)^2+Pb2*abs(w_hat'*Hb2c)^2+sigma_c)*y3^2))
+% 
+%         maximize (log(1+2*y4*sqrt(Pb2*abs(w_hat'*Ha2b2)^2)...
+%         -(Pa*abs(w_hat'*Ha2a)^2 + Pb*abs(w_hat'*Ha2b)^2 + sigma_ab + sigma_loop)*y4^2)...
+%         + log(1+2*y5*sqrt(Pa2*abs(w_hat'*Ha2b2)^2)...
+%         -(Pa*abs(w_hat'*Hb2a)^2 + Pb*abs(w_hat'*Hb2b)^2 + sigma_ab + sigma_loop)*y5^2)...
+%         + log(2*y6*sqrt(Pa*abs(w_hat'*Hac)^2+Pb*abs(w_hat'*Hbc)^2+sigma_c)...
+%         -(Pa2*abs(w_hat'*Ha2c)^2 + Pb2*abs(w_hat'*Hb2c)^2 + Pa*abs(w_hat'*Hac)^2+Pb*abs(w_hat'*Hbc)^2+sigma_c)*y6^2))
+% 
+%         subject to
+%         Pa >= Pmin
+%         Pb >= Pmin 
+%         Pa2 >= Pmin
+%         Pb2 >= Pmin 
+%         Pb <= Pmax
+%         Pa <= Pmax
+%         Pb2 <= Pmax
+%         Pa2 <= Pmax
+%     cvx_end
+% 
+%     % cvx_status
+% 
+% end
